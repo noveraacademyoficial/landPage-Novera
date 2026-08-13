@@ -1,0 +1,14 @@
+# Fora do deploy. Estes arquivos estão versionados de propósito (são as
+# únicas cópias do material bruto), mas não têm por que ser servidos:
+# somam ~37 MB e ninguém os acessa pela página.
+
+# Mídia original
+assets/img/_originais/
+assets/video/Video background.mp4
+
+# Documentação e configuração de ferramenta
+README.md
+.claude/
+
+# Controle de versão
+.gitattributes

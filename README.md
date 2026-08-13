@@ -208,13 +208,35 @@ Depois abra `http://localhost:4321`.
 
 ## 4. Publicar
 
-É um site estático — sobe em qualquer lugar, sem build:
+É um site estático — sobe em qualquer lugar, sem build.
 
-- **Netlify / Vercel / Cloudflare Pages:** arraste a pasta inteira. Sem comando de build.
-- **Hospedagem tradicional (cPanel/FTP):** envie o conteúdo para `public_html/`.
+### Vercel (configurado)
 
-Antes de publicar, troque em `index.html` as ocorrências de
-`https://noveraacademy.com.br/` (canonical + Open Graph) pelo domínio real.
+Importe o repositório em vercel.com. Framework preset: **Other**. Deixe *Build Command*
+e *Output Directory* vazios — não há build. O deploy roda a cada push na `main`.
+
+Dois arquivos cuidam do resto:
+
+- **`.vercelignore`** — tira do deploy os ~37 MB de mídia original
+  (`assets/img/_originais/` e `assets/video/Video background.mp4`). Eles estão no Git
+  de propósito, como backup, mas não têm por que ser servidos ao público.
+- **`vercel.json`** — cabeçalhos de segurança e política de cache:
+  HTML sempre revalidado, `/assets/*` com 1 dia de cache e revalidação em segundo
+  plano por 7 dias. O cache não é eterno porque os nomes de arquivo não têm hash —
+  com `immutable`, trocar uma foto deixaria o visitante recorrente vendo a antiga.
+
+### Domínio
+
+`https://noveraacademy.com.br/` aparece em **5 pontos** do `index.html`: `canonical`,
+`og:url`, `og:image`, `twitter:image` e duas chaves do JSON-LD. Ao apontar o domínio
+na Vercel (Settings → Domains), confira se todos batem.
+
+`og:image` **precisa ser URL absoluta** — os robôs do WhatsApp, Facebook e LinkedIn não
+resolvem caminho relativo, e sem isso o link compartilhado sai sem imagem de preview.
+
+> **Windows → Linux:** a Vercel serve de um sistema que diferencia maiúsculas de
+> minúsculas; o Windows não. Um `Logo.png` referenciado como `logo.png` funciona na
+> sua máquina e dá 404 em produção. As referências atuais foram conferidas uma a uma.
 
 ---
 
