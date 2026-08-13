@@ -1,0 +1,837 @@
+/* =========================================================
+   NOVERA ACADEMY — Landing Page
+   Paleta: roxo + branco + lavanda/acinzentado
+   Página clara com "zonas escuras" onde há mídia por trás
+   ========================================================= */
+
+:root{
+  /* ---- Roxos da marca ---- */
+  --violet-950:#1A0533;   /* roxo bem escuro — base das zonas escuras */
+  --violet-900:#2A0A4E;
+  --violet-800:#3B0F6B;
+  --violet-700:#4C1191;
+  --violet-600:#5E17B0;
+  --violet-500:#7226D9;
+  --violet-400:#8B4CF0;
+  --violet-300:#A97BFF;
+  --violet-200:#C9AEFF;
+  --violet-100:#E3D3FF;
+
+  /* ---- Cores de apoio que harmonizam com o roxo ----
+     Magenta e índigo são vizinhas do roxo no círculo cromático (transição
+     natural); âmbar e turquesa entram como contraste pontual, só em detalhe. */
+  --magenta-600:#C42D85;
+  --magenta-500:#E2419A;
+  --magenta-400:#F566B4;
+  --indigo-600:#4152C9;
+  --indigo-500:#5566E0;
+  --teal-500:#17BFAE;
+  --teal-400:#2FD6C3;
+  --amber-500:#F5A02B;
+  --amber-400:#FFB443;
+
+  /* ---- Brancos, lavandas e acinzentados ---- */
+  --white:#FFFFFF;
+  --lav-50:#FBF9FF;
+  --lav-100:#F5F0FF;
+  --lav-200:#EBE2FF;
+  --lav-300:#DCCDFF;
+  --mist-100:#F4F3F7;   /* cinza levemente arroxeado */
+  --mist-200:#E8E5EF;
+
+  /* ---- Escuros (usados nas zonas com mídia) ---- */
+  --ink-950:#070210;
+  --ink-900:#0E0419;
+  --ink-850:#150729;
+  --ink-800:#1A0533;
+  --ink-700:#260B49;
+
+  /* ---- Tokens de tema: valores CLAROS por padrão ----
+     As zonas escuras (.zone-dark) redefinem só estes tokens,
+     então cada componente funciona nos dois fundos sem duplicação. */
+  --bg:var(--lav-50);
+  --surface:var(--white);
+  --surface-2:var(--lav-100);
+  --text:#1B0B2E;
+  --text-soft:#4E3C69;
+  --text-dim:#7B6B95;
+  --line:rgba(94,23,176,.14);
+  --line-strong:rgba(94,23,176,.3);
+  --accent:var(--violet-600);
+  --hl-grad:linear-gradient(120deg,var(--violet-600),var(--violet-400) 55%,var(--violet-500));
+  --tint:rgba(114,38,217,.06);
+  --tint-2:rgba(114,38,217,.12);
+  /* Fundo de cards/depoimentos/FAQ: sólido no claro, vidro no escuro */
+  --card-bg:var(--white);
+  --card-blur:none;
+
+  /* Gradiente do CTA: roxo → magenta. O magenta puxa o olho para o botão
+     sem sair da família do roxo. */
+  --grad-brand:linear-gradient(135deg,var(--violet-600) 0%,var(--violet-500) 40%,var(--magenta-500) 100%);
+  --grad-deep:linear-gradient(140deg,var(--violet-950) 0%,var(--violet-800) 55%,var(--indigo-600) 130%);
+
+  --shadow-sm:0 2px 10px rgba(42,10,78,.06),0 8px 30px rgba(42,10,78,.07);
+  --shadow-md:0 18px 48px rgba(42,10,78,.14);
+  --shadow-glow:0 10px 30px rgba(160,40,160,.34);
+
+  --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:26px;
+  /* Botões quadrados (cantos apenas suavizados) */
+  --r-btn:10px;
+
+  --font-display:'Sora',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+
+  --wrap:1180px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+
+  /* Tratamento de cor das fotos de viagem */
+  --photo-filter:saturate(.8) contrast(1.05) brightness(.97) hue-rotate(-6deg);
+  /* Pintado sob cada foto: se o arquivo faltar, a área segue na identidade roxa */
+  --photo-fallback:linear-gradient(150deg,var(--violet-600) 0%,var(--violet-400) 45%,var(--violet-700) 100%);
+}
+
+/* ---- Zona escura: só troca os tokens ---- */
+.zone-dark{
+  --bg:var(--ink-950);
+  --surface:rgba(255,255,255,.06);
+  --surface-2:rgba(255,255,255,.09);
+  --text:#F6F1FF;
+  --text-soft:#CFC1E6;
+  --text-dim:#A292BE;
+  --line:rgba(201,174,255,.2);
+  --line-strong:rgba(201,174,255,.38);
+  --accent:var(--violet-300);
+  --hl-grad:linear-gradient(120deg,var(--violet-200),#F0E2FF 55%,var(--violet-100));
+  --tint:rgba(255,255,255,.06);
+  --tint-2:rgba(255,255,255,.12);
+  /* Sobre foto, card sólido brigaria com a imagem: vira vidro fosco */
+  --card-bg:rgba(255,255,255,.08);
+  --card-blur:blur(14px) saturate(130%);
+  --shadow-sm:0 4px 18px rgba(0,0,0,.35);
+  --shadow-md:0 18px 48px rgba(10,3,18,.55);
+  color:var(--text);
+}
+
+/* ---------- Reset ---------- */
+*,*::before,*::after{box-sizing:border-box}
+/* `display` de componente não pode vencer o atributo hidden */
+[hidden]{display:none !important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.is-locked{overflow:hidden}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--font-display);line-height:1.08;letter-spacing:-.025em;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+.skip-link{
+  position:absolute;left:-9999px;top:0;z-index:999;
+  background:var(--violet-600);color:#fff;padding:.8rem 1.2rem;border-radius:0 0 var(--r-sm) 0;font-weight:600;
+}
+.skip-link:focus{left:0}
+
+:focus-visible{outline:3px solid var(--violet-500);outline-offset:3px;border-radius:6px}
+.zone-dark :focus-visible{outline-color:var(--violet-200)}
+
+.wrap{width:min(100% - 2.5rem,var(--wrap));margin-inline:auto}
+.wrap--narrow{width:min(100% - 2.5rem,780px)}
+
+/* ---------- Marca ---------- */
+.brand{display:flex;align-items:center;gap:.7rem}
+.brand__mark{
+  width:52px;height:52px;object-fit:contain;
+  filter:drop-shadow(0 4px 14px rgba(114,38,217,.4));
+  transition:transform .5s var(--ease-out);
+}
+.brand:hover .brand__mark{transform:rotate(-6deg) scale(1.06)}
+.brand__mark.is-missing{
+  background:var(--grad-brand);border-radius:50%;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.15);
+}
+.brand__text{display:flex;flex-direction:column;line-height:1;color:var(--text)}
+.brand__text strong{font-family:var(--font-display);font-size:1.12rem;font-weight:800;letter-spacing:.16em}
+.brand__text em{
+  font-style:normal;font-size:.62rem;letter-spacing:.42em;
+  color:var(--accent);font-weight:600;margin-top:.25rem;
+}
+.brand--sm .brand__mark{width:40px;height:40px}
+
+/* ---------- Botões ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  padding:.82rem 1.5rem;border:0;border-radius:var(--r-btn);
+  font-family:var(--font-display);font-weight:700;font-size:.95rem;letter-spacing:.01em;
+  cursor:pointer;position:relative;isolation:isolate;
+  transition:transform .3s var(--ease-out),box-shadow .3s var(--ease-out),background .3s var(--ease),color .3s var(--ease);
+  text-align:center;
+}
+.btn svg{flex:none;transition:transform .3s var(--ease-out)}
+.btn:hover svg{transform:translateX(3px)}
+.btn:active{transform:translateY(1px) scale(.99)}
+
+.btn--primary{background:var(--grad-brand);color:#fff;box-shadow:var(--shadow-glow)}
+.btn--primary::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;z-index:-1;
+  background:linear-gradient(135deg,var(--violet-500),var(--magenta-400));
+  opacity:0;transition:opacity .35s var(--ease);
+}
+.btn--primary:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(226,65,154,.42)}
+.btn--primary:hover::after{opacity:1}
+.btn--primary:disabled{opacity:.42;cursor:not-allowed;box-shadow:none;transform:none}
+.btn--primary:disabled:hover::after{opacity:0}
+
+.btn--ghost{
+  background:var(--tint);color:var(--text);
+  box-shadow:inset 0 0 0 1.5px var(--line-strong);
+}
+.btn--ghost:hover{background:var(--tint-2);transform:translateY(-2px)}
+
+.btn--quiet{background:transparent;color:var(--text-soft);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn--quiet:hover{color:var(--text);box-shadow:inset 0 0 0 1.5px var(--line-strong);background:var(--tint)}
+
+.btn--lg{padding:1.05rem 2rem;font-size:1.03rem}
+.btn--xl{padding:1.25rem 2.6rem;font-size:1.12rem}
+.btn--block{width:100%}
+
+/* ---------- Eyebrow / títulos de seção ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-size:.76rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1.4rem;
+}
+/* Ponto âmbar: um respiro quente no meio de tanto roxo, e leva o olho
+   para o rótulo de cada seção. */
+.eyebrow .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--amber-400);
+  box-shadow:0 0 0 4px rgba(255,180,67,.25);animation:pulse 2.6s var(--ease) infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(255,180,67,.25)}50%{box-shadow:0 0 0 9px rgba(255,180,67,0)}}
+
+.hl{
+  background:var(--hl-grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ink{color:var(--text-dim)}
+
+/* =========================================================
+   NAV
+   ========================================================= */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:80;
+  padding:1.1rem 0;
+  transition:background .45s var(--ease),backdrop-filter .45s var(--ease),padding .45s var(--ease),box-shadow .45s var(--ease);
+}
+/* Sobre o hero (escuro) a nav usa tokens claros; ao grudar sobre o
+   conteúdo branco ela inverte para roxo-escuro sobre branco. */
+.nav.is-stuck{
+  padding:.6rem 0;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 1px 0 rgba(94,23,176,.1),0 12px 34px rgba(42,10,78,.09);
+  --text:#1B0B2E;
+  --text-soft:#4E3C69;
+  --text-dim:#7B6B95;
+  --line:rgba(94,23,176,.14);
+  --line-strong:rgba(94,23,176,.3);
+  --accent:var(--violet-600);
+  --tint:rgba(114,38,217,.06);
+  --tint-2:rgba(114,38,217,.12);
+  color:var(--text);
+}
+.nav__inner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
+/* O botão da nav não pode quebrar em duas linhas nem empurrar a marca */
+.nav__cta{flex:none;white-space:nowrap}
+.nav__links{display:flex;gap:2rem;font-size:.93rem;font-weight:500;color:var(--text-soft)}
+.nav__links a{position:relative;padding:.3rem 0;transition:color .3s var(--ease)}
+.nav__links a::after{
+  content:'';position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px;
+  background:var(--grad-brand);transition:width .38s var(--ease-out);
+}
+.nav__links a:hover{color:var(--text)}
+.nav__links a:hover::after{width:100%}
+
+/* =========================================================
+   HERO — vídeo em background
+   ========================================================= */
+.hero{
+  position:relative;min-height:100svh;display:flex;align-items:center;
+  padding:9rem 0 6rem;overflow:hidden;
+  background:var(--ink-950);
+  text-align:center;
+}
+.hero__bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+
+/* Os vídeos são verticais (gravados no celular): object-fit cover
+   preenche a tela e recorta as laterais no desktop. */
+.hero__video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 42%;
+  filter:saturate(.78) contrast(1.06) brightness(.72) hue-rotate(-6deg);
+  opacity:0;transition:opacity .9s var(--ease);
+}
+.hero__video.is-ready{opacity:1}
+
+/* Véu roxo por cima do vídeo: garante contraste do texto em qualquer cena */
+.hero__veil{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(90% 70% at 50% 40%,rgba(42,10,78,.36),transparent 70%),
+    linear-gradient(180deg,rgba(10,3,18,.88) 0%,rgba(18,6,31,.6) 34%,rgba(18,6,31,.66) 62%,rgba(10,3,18,.94) 100%);
+}
+.hero__glow{
+  position:absolute;width:60vw;height:60vw;max-width:820px;max-height:820px;
+  left:50%;top:44%;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(139,76,240,.34),transparent 66%);
+  filter:blur(52px);animation:float 14s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-56%)}}
+
+.hero__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+/* Headline longa: medida mais larga e corpo um pouco menor, senão as
+   linhas quebram em cascata. text-wrap:balance iguala o comprimento delas. */
+.hero__title{
+  font-size:clamp(2.2rem,4.8vw,3.9rem);font-weight:800;margin-bottom:1.6rem;
+  max-width:24ch;text-wrap:balance;
+}
+.hero__sub{font-size:clamp(1.02rem,1.6vw,1.2rem);color:var(--text-soft);max-width:56ch;margin-bottom:2.6rem}
+.hero__actions{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-bottom:3rem}
+
+.hero__trust{
+  list-style:none;margin:0;padding:1.6rem 0 0;
+  display:flex;flex-wrap:wrap;gap:clamp(1.6rem,5vw,3.4rem);justify-content:center;
+  border-top:1px solid var(--line);font-size:.86rem;color:var(--text-dim);
+}
+.hero__trust strong{
+  display:block;font-family:var(--font-display);font-size:1.32rem;color:var(--text);font-weight:700;letter-spacing:-.02em;
+}
+
+.hero__scroll{
+  position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);z-index:3;
+  display:flex;align-items:center;gap:.65rem;
+  font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text-dim);
+}
+.hero__scroll span{
+  width:22px;height:36px;border:1.5px solid var(--line-strong);border-radius:12px;position:relative;
+}
+.hero__scroll span::after{
+  content:'';position:absolute;left:50%;top:7px;width:4px;height:7px;margin-left:-2px;border-radius:2px;
+  background:var(--violet-200);animation:wheel 1.9s var(--ease) infinite;
+}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}35%{opacity:1}100%{opacity:0;transform:translateY(13px)}}
+
+/* =========================================================
+   MARQUEE
+   ========================================================= */
+.marquee{
+  overflow:hidden;padding:1.15rem 0;
+  background:linear-gradient(90deg,var(--violet-800),var(--magenta-600) 50%,var(--violet-800));
+  border-block:1px solid rgba(255,255,255,.14);
+}
+.marquee__track{
+  display:flex;align-items:center;gap:2.4rem;width:max-content;
+  animation:scroll-x 48s linear infinite;
+  font-family:var(--font-display);font-weight:700;font-size:1.05rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.94);
+}
+.marquee__track i{color:var(--amber-400);font-style:normal;font-size:.75rem}
+@keyframes scroll-x{to{transform:translateX(-50%)}}
+
+/* =========================================================
+   SEÇÕES
+   ========================================================= */
+.section{padding:clamp(5rem,10vw,8.5rem) 0;position:relative;background:var(--bg);overflow:hidden}
+.section > .wrap{position:relative;z-index:1}
+
+/* ---------- Alinhamento ----------
+   Um sistema só para a página inteira: cabeçalho de seção centralizado
+   (rótulo, título e linha de apoio), corpo de texto alinhado à esquerda.
+   Parágrafo longo centralizado tem borda esquerda irregular e custa
+   legibilidade — por isso a divisão é por tipo de conteúdo, não por seção. */
+.shead{max-width:60ch;margin:0 auto 3.4rem;text-align:center}
+.shead h2{font-size:clamp(2rem,4.4vw,3.3rem);font-weight:800;margin-bottom:1.1rem;text-wrap:balance}
+.shead__sub{color:var(--text-soft);font-size:1.05rem;max-width:52ch;margin-inline:auto}
+.shead .eyebrow{justify-content:center}
+
+/* ---------- Seções em cor sólida ----------
+   Duas variações alternadas dão o ritmo da página sem usar imagem:
+   .section--tint (lavanda claro) e .section--deep (roxo escuro).
+   O leve brilho radial evita o aspecto chapado sem virar gradiente. */
+.section--tint{background:var(--lav-100)}
+.section--tint::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(75% 55% at 50% 0%,rgba(114,38,217,.06),transparent 70%);
+}
+.section--deep{background:var(--violet-950)}
+.section--deep::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(80% 60% at 50% 0%,rgba(114,38,217,.22),transparent 72%);
+}
+.section--tint > .wrap,
+.section--deep > .wrap{position:relative;z-index:1}
+
+/* ---------- Lista de destinos ---------- */
+.destlist{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem 2rem;
+  text-align:left;
+}
+.destlist li{
+  padding:1.2rem 0 1.2rem 1.1rem;
+  border-left:2px solid var(--line-strong);
+  transition:border-color .5s var(--ease),transform .5s var(--ease-out);
+}
+.destlist li:hover{border-left-color:var(--magenta-500);transform:translateX(4px)}
+.destlist b{
+  display:block;font-family:var(--font-display);font-size:1.24rem;font-weight:700;
+  letter-spacing:-.01em;color:var(--text);margin-bottom:.25rem;
+}
+.destlist span{font-size:.9rem;color:var(--text-soft);display:block}
+@media (max-width:900px){.destlist{grid-template-columns:repeat(2,1fr);gap:1.2rem 1.6rem}}
+@media (max-width:560px){.destlist{grid-template-columns:1fr;gap:.4rem}.destlist li{padding:.85rem 0 .85rem 1rem}}
+
+/* ---------- CTA intermediário (entre seções) ---------- */
+.midcta{
+  margin-top:3.2rem;padding:2rem 2.2rem;border-radius:var(--r-lg);
+  display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;
+  background:linear-gradient(120deg,var(--lav-100),var(--white) 60%,var(--lav-200));
+  box-shadow:var(--shadow-sm);
+  position:relative;overflow:hidden;
+}
+/* sobre foto, o bloco claro chapado sumiria com a imagem: vira vidro */
+.zone-dark .midcta{
+  background:rgba(255,255,255,.1);backdrop-filter:blur(16px) saturate(130%);
+  border:1px solid var(--line);
+}
+.midcta::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--grad-brand);
+}
+.midcta__txt{
+  font-family:var(--font-display);font-weight:600;font-size:1.12rem;
+  color:var(--text);max-width:40ch;
+}
+@media (max-width:620px){
+  .midcta{padding:1.6rem 1.4rem;flex-direction:column;align-items:stretch;text-align:center}
+  .midcta__txt{font-size:1rem;max-width:none}
+}
+
+/* ---------- Cards do método ---------- */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-bottom:4.5rem}
+.card{
+  position:relative;padding:2.4rem 2rem;border-radius:var(--r-lg);
+  background:var(--card-bg);backdrop-filter:var(--card-blur);
+  border:1px solid var(--line);overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  transition:transform .5s var(--ease-out),border-color .5s var(--ease),box-shadow .5s var(--ease);
+}
+.card::before{
+  content:'';position:absolute;inset:0 auto auto 0;height:3px;width:0;
+  background:var(--grad-brand);transition:width .6s var(--ease-out);
+}
+.card:hover{transform:translateY(-6px);border-color:var(--line-strong);box-shadow:var(--shadow-md)}
+.card:hover::before{width:100%}
+.card__num{
+  display:block;font-family:var(--font-display);font-size:.82rem;font-weight:700;letter-spacing:.28em;
+  color:var(--violet-500);margin-bottom:1.2rem;
+}
+/* Cada pilar com sua cor: roxo → magenta → turquesa */
+.card:nth-child(2) .card__num{color:var(--magenta-500)}
+.card:nth-child(3) .card__num{color:var(--teal-500)}
+.card:nth-child(2)::before{background:linear-gradient(135deg,var(--magenta-500),var(--violet-400))}
+.card:nth-child(3)::before{background:linear-gradient(135deg,var(--teal-400),var(--indigo-500))}
+.card h3{font-size:1.36rem;margin-bottom:.75rem}
+.card p{color:var(--text-soft);font-size:.98rem}
+
+/* ---------- Stats ---------- */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  padding:2.6rem;border-radius:var(--r-lg);
+  background:var(--grad-deep);
+  box-shadow:var(--shadow-md);
+  position:relative;overflow:hidden;
+}
+/* brilho magenta no canto, para o bloco não ficar chapado */
+.stats::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 90% at 88% 10%,rgba(226,65,154,.4),transparent 60%);
+}
+.stat{position:relative;z-index:1}
+.stat{text-align:center;color:#fff}
+.stat b{
+  display:block;font-family:var(--font-display);font-size:clamp(2rem,4.2vw,3rem);font-weight:800;
+  color:#fff;letter-spacing:-.03em;line-height:1;
+}
+.stat span{display:block;margin-top:.6rem;font-size:.86rem;color:rgba(255,255,255,.84);max-width:22ch;margin-inline:auto}
+
+.stats__note{
+  margin-top:1.4rem;text-align:center;font-size:.9rem;color:var(--text-soft);
+  display:flex;flex-wrap:wrap;gap:.35rem .8rem;justify-content:center;
+}
+.stats__note b{color:var(--text);font-weight:600}
+.stats__note span{color:var(--text-dim)}
+
+/* ---------- Faixa parallax ---------- */
+.band{position:relative;padding:clamp(5rem,11vw,9rem) 0;overflow:hidden;text-align:center;background:var(--ink-950)}
+.band__bg{
+  position:absolute;inset:-18% 0;
+  background-image:url('../img/travel-lisboa.jpg'),var(--photo-fallback);
+  background-size:cover;background-position:center;
+  filter:var(--photo-filter) brightness(.5);will-change:transform;
+}
+.band::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--ink-950) 0%,rgba(42,10,78,.72) 45%,var(--ink-950) 100%);
+}
+.band__inner{position:relative;z-index:2}
+/* Frase longa (o dado dos 2%): corpo menor e medida limitada */
+.band h2{
+  font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:800;margin-bottom:2.2rem;
+  max-width:30ch;margin-inline:auto;text-wrap:balance;
+}
+
+/* ---------- Depoimentos ---------- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.quotes blockquote{
+  margin:0;padding:2.2rem 1.9rem;border-radius:var(--r-lg);
+  background:var(--card-bg);backdrop-filter:var(--card-blur);
+  border:1px solid var(--line);position:relative;
+  box-shadow:var(--shadow-sm);
+  transition:transform .5s var(--ease-out),border-color .5s var(--ease),box-shadow .5s var(--ease);
+}
+.quotes blockquote::before{
+  content:'”';position:absolute;top:.2rem;right:1.2rem;
+  font-family:var(--font-display);font-size:5rem;line-height:1;color:var(--violet-300);opacity:.5;
+}
+.quotes blockquote:hover{transform:translateY(-5px);border-color:var(--line-strong);box-shadow:var(--shadow-md)}
+.quotes p{font-size:1.02rem;color:var(--text);margin-bottom:1.5rem}
+.quotes cite{font-style:normal;display:flex;flex-direction:column;gap:.15rem}
+.quotes cite b{font-family:var(--font-display);font-size:.98rem}
+.quotes cite span{font-size:.84rem;color:var(--text-dim)}
+
+/* ---------- FAQ ---------- */
+.faq{display:flex;flex-direction:column;gap:.8rem}
+.faq details{
+  border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--card-bg);backdrop-filter:var(--card-blur);overflow:hidden;
+  transition:border-color .4s var(--ease),box-shadow .4s var(--ease);
+}
+.faq details[open]{border-color:var(--line-strong);box-shadow:var(--shadow-sm)}
+.faq summary{
+  cursor:pointer;list-style:none;padding:1.25rem 1.5rem;
+  font-family:var(--font-display);font-weight:600;font-size:1.03rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{
+  content:'';flex:none;width:11px;height:11px;
+  border-right:2px solid var(--violet-500);border-bottom:2px solid var(--violet-500);
+  transform:rotate(45deg) translateY(-3px);transition:transform .35s var(--ease-out);
+}
+.faq details[open] summary::after{transform:rotate(-135deg) translateY(-3px)}
+.faq p{padding:0 1.5rem 1.35rem;color:var(--text-soft);font-size:.97rem}
+
+/* ---------- CTA final ---------- */
+.final{position:relative;padding:clamp(5rem,11vw,9rem) 0;overflow:hidden;text-align:center;background:var(--ink-950)}
+.final__bg{
+  position:absolute;inset:-18% 0;
+  background-image:url('../img/travel-barcelona.jpg'),var(--photo-fallback);
+  background-size:cover;background-position:center;
+  filter:var(--photo-filter) brightness(.44);will-change:transform;
+}
+.final::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(70% 70% at 50% 50%,rgba(94,23,176,.62),transparent 70%),linear-gradient(180deg,var(--ink-950),rgba(10,3,18,.72) 40%,var(--ink-950));
+}
+.final__inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.4rem}
+/* lockup completo (emblema + wordmark): altura livre, largura manda */
+.final__logo{width:min(180px,46vw);height:auto;object-fit:contain;filter:drop-shadow(0 10px 34px rgba(114,38,217,.7))}
+.final__logo.is-missing{background:var(--grad-brand);border-radius:50%}
+.final h2{font-size:clamp(2rem,4.8vw,3.4rem);font-weight:800;text-wrap:balance}
+.final p{color:var(--text-soft)}
+.final .btn{margin-top:.8rem}
+
+/* ---------- Footer ---------- */
+.foot{padding:3rem 0;border-top:1px solid var(--line);background:var(--ink-950)}
+.foot__inner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.foot__legal{font-size:.85rem;color:var(--text-dim)}
+.foot__links{display:flex;gap:1.6rem;font-size:.88rem;color:var(--text-soft)}
+.foot__links a:hover{color:var(--violet-200)}
+
+/* =========================================================
+   BARRA FIXA DE CTA
+   Aparece depois do hero e acompanha o visitante até o fim,
+   para o botão estar sempre a um clique de distância.
+   ========================================================= */
+.cta-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:90;
+  background:var(--grad-deep);
+  border-top:1px solid rgba(201,174,255,.22);
+  box-shadow:0 -12px 40px rgba(7,2,16,.45);
+  transform:translateY(110%);
+  transition:transform .5s var(--ease-out);
+  padding:.85rem 0;
+}
+.cta-bar.is-up{transform:none}
+.cta-bar__inner{display:flex;align-items:center;justify-content:space-between;gap:1.2rem}
+.cta-bar__txt{display:flex;flex-direction:column;line-height:1.25;color:#fff}
+.cta-bar__txt b{font-family:var(--font-display);font-size:1.02rem;font-weight:700}
+.cta-bar__txt span{font-size:.82rem;color:var(--violet-200)}
+.cta-bar__txt span i{font-style:normal;color:var(--teal-400);font-weight:600}
+.cta-bar .btn{flex:none;padding:.9rem 1.9rem}
+
+/* pulso discreto para o botão não passar despercebido */
+@keyframes ctaPulse{
+  0%,100%{box-shadow:0 10px 30px rgba(226,65,154,.34)}
+  50%{box-shadow:0 10px 30px rgba(226,65,154,.34),0 0 0 10px rgba(226,65,154,0)}
+}
+.cta-bar .btn--primary{animation:ctaPulse 3s var(--ease) infinite}
+
+@media (max-width:620px){
+  .cta-bar{padding:.7rem 0}
+  .cta-bar__txt span{display:none}
+  .cta-bar__txt b{font-size:.94rem}
+  .cta-bar .btn{padding:.85rem 1.3rem;font-size:.9rem}
+}
+
+/* =========================================================
+   SCROLL REVEAL (coesão ao subir e descer)
+   ========================================================= */
+[data-reveal]{
+  opacity:0;transform:translateY(34px);
+  transition:opacity .8s var(--ease-out),transform .8s var(--ease-out);
+  transition-delay:var(--delay,0ms);
+}
+[data-reveal].is-in{opacity:1;transform:none}
+
+/* As fotos entram com um movimento maior e um leve zoom — e voltam ao
+   estado inicial quando saem de vista, então o efeito acontece tanto
+   descendo quanto subindo a página. */
+.tile[data-reveal]{opacity:0;transform:translateY(52px) scale(.93)}
+.tile[data-reveal].is-in{opacity:1;transform:none}
+.tile[data-reveal]{transition:opacity .85s var(--ease-out),transform .95s var(--ease-out),box-shadow .5s var(--ease-out)}
+
+/* =========================================================
+   MODAL / QUIZ
+   ========================================================= */
+.modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:1.25rem}
+.modal[hidden]{display:none}
+.modal__backdrop{
+  position:absolute;inset:0;background:rgba(27,11,46,.55);
+  backdrop-filter:blur(10px);
+  animation:fade .35s var(--ease) both;
+}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.modal__panel{
+  position:relative;width:min(100%,640px);max-height:min(92svh,860px);
+  display:flex;flex-direction:column;
+  background:var(--white);
+  border:1px solid var(--line);border-radius:var(--r-xl);
+  box-shadow:0 40px 110px rgba(27,11,46,.3);
+  overflow:hidden;
+  animation:pop .45s var(--ease-out) both;
+}
+@keyframes pop{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
+.modal__panel::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(90% 45% at 50% 0%,rgba(114,38,217,.09),transparent 65%);
+}
+
+.modal__head{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.15rem 1.5rem .9rem;
+}
+.modal__brand{display:flex;align-items:center;gap:.65rem;font-family:var(--font-display);font-weight:700;font-size:.92rem;letter-spacing:.06em}
+.modal__brand img{width:34px;height:34px;object-fit:contain}
+.modal__brand img.is-missing{background:var(--grad-brand);border-radius:50%}
+.modal__close{
+  flex:none;width:38px;height:38px;display:grid;place-items:center;
+  background:var(--tint);border:1px solid var(--line);border-radius:50%;
+  color:var(--text-soft);cursor:pointer;transition:all .3s var(--ease);
+}
+.modal__close:hover{background:var(--violet-500);color:#fff;transform:rotate(90deg)}
+
+.progress{position:relative;z-index:1;height:4px;margin:0 1.5rem;background:var(--lav-200);border-radius:999px;overflow:hidden}
+.progress__bar{height:100%;width:20%;border-radius:999px;background:var(--grad-brand);transition:width .55s var(--ease-out)}
+.progress__label{
+  position:relative;z-index:1;
+  padding:.55rem 1.5rem 0;font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);font-weight:600;
+}
+
+.modal__body{position:relative;z-index:1;padding:1.1rem 1.5rem 1.5rem;overflow-y:auto;flex:1;scrollbar-width:thin}
+.modal__body::-webkit-scrollbar{width:8px}
+.modal__body::-webkit-scrollbar-thumb{background:var(--lav-300);border-radius:8px}
+
+.step{display:none}
+.step.is-active{display:block;animation:stepIn .45s var(--ease-out) both}
+@keyframes stepIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.step--back.is-active{animation-name:stepInBack}
+@keyframes stepInBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+
+.step__q{font-size:clamp(1.32rem,3.4vw,1.66rem);font-weight:700;margin-bottom:1.4rem;line-height:1.22}
+.step__hint{color:var(--text-dim);font-size:.9rem;margin-top:-.9rem;margin-bottom:1.3rem}
+
+/* ---------- Opções ---------- */
+.opts{display:flex;flex-direction:column;gap:.7rem}
+.opt{
+  display:flex;align-items:center;gap:1rem;width:100%;text-align:left;
+  padding:1rem 1.1rem;border-radius:var(--r-md);cursor:pointer;
+  background:var(--lav-50);border:1.5px solid var(--line);
+  transition:transform .28s var(--ease-out),background .28s var(--ease),border-color .28s var(--ease),box-shadow .28s var(--ease);
+}
+.opt:hover{background:var(--lav-100);border-color:var(--line-strong);transform:translateX(4px)}
+.opt[aria-checked="true"]{
+  background:linear-gradient(120deg,var(--violet-600),var(--violet-400));
+  border-color:var(--violet-600);
+  box-shadow:0 10px 28px rgba(114,38,217,.28);
+  color:#fff;
+}
+.opt__ico{flex:none;font-size:1.5rem;line-height:1;width:44px;height:44px;display:grid;place-items:center;background:var(--tint-2);border-radius:12px}
+.opt[aria-checked="true"] .opt__ico{background:rgba(255,255,255,.2)}
+.opt__txt{display:flex;flex-direction:column;gap:.15rem;flex:1;min-width:0}
+.opt__txt b{font-family:var(--font-display);font-weight:600;font-size:1rem;line-height:1.3}
+.opt__txt em{font-style:normal;font-size:.83rem;color:var(--text-dim)}
+.opt[aria-checked="true"] .opt__txt em{color:rgba(255,255,255,.85)}
+.opt__check{
+  flex:none;width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--line-strong);position:relative;transition:all .3s var(--ease-out);
+}
+.opt[aria-checked="true"] .opt__check{background:#fff;border-color:#fff}
+.opt__check::after{
+  content:'';position:absolute;left:7px;top:3px;width:5px;height:10px;
+  border:solid var(--violet-600);border-width:0 2.4px 2.4px 0;transform:rotate(45deg) scale(0);
+  transition:transform .3s var(--ease-out);
+}
+.opt[aria-checked="true"] .opt__check::after{transform:rotate(45deg) scale(1)}
+
+/* ---------- Agenda (data/hora) ---------- */
+.agenda{
+  margin-top:1.1rem;padding:1.25rem;border-radius:var(--r-md);
+  background:var(--lav-100);border:1px dashed var(--line-strong);
+  animation:stepIn .4s var(--ease-out) both;
+}
+.agenda[hidden]{display:none}
+.agenda__title{font-family:var(--font-display);font-weight:600;font-size:.98rem;margin-bottom:.9rem}
+.agenda__hint{margin-top:.8rem;font-size:.8rem;color:var(--text-dim)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+
+.field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.9rem}
+.field > span{font-size:.82rem;font-weight:600;color:var(--text-soft);letter-spacing:.02em}
+.field input{
+  width:100%;padding:.85rem 1rem;font-size:1rem;font-family:inherit;
+  color:var(--text);background:var(--white);
+  border:1.5px solid var(--line-strong);border-radius:var(--r-sm);
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease);
+}
+.field input::placeholder{color:var(--text-dim);opacity:.75}
+.field input:focus{outline:none;border-color:var(--violet-500);box-shadow:0 0 0 4px rgba(139,76,240,.16)}
+.field input::-webkit-calendar-picker-indicator{cursor:pointer}
+.field input[aria-invalid="true"]{border-color:#D92D62;box-shadow:0 0 0 4px rgba(217,45,98,.12)}
+.field__err{color:#C42356;font-size:.78rem;min-height:1em}
+
+.lead{display:flex;flex-direction:column}
+.lead .btn{margin-top:.5rem}
+
+/* ---------- Resultado ---------- */
+.done{text-align:center;padding:.5rem 0 1rem}
+.done__ring{display:grid;place-items:center;margin-bottom:1.2rem}
+.done__circle{fill:none;stroke:var(--violet-500);stroke-width:2.5;stroke-dasharray:145;stroke-dashoffset:145;animation:draw .8s var(--ease-out) forwards}
+.done__check{stroke:var(--violet-500);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:36;stroke-dashoffset:36;animation:draw .45s var(--ease-out) .55s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.done h3{font-size:1.7rem;margin-bottom:.7rem}
+.done > p{color:var(--text-soft);margin-bottom:1.6rem}
+
+.plan{
+  padding:1.5rem;border-radius:var(--r-md);text-align:left;margin-bottom:1.5rem;
+  background:linear-gradient(135deg,var(--violet-600),var(--violet-400));
+  color:#fff;
+}
+.plan__label{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82);font-weight:700;margin-bottom:.5rem}
+.plan__name{font-family:var(--font-display);font-size:1.32rem;font-weight:700;margin-bottom:.5rem}
+.plan__why{font-size:.93rem;color:rgba(255,255,255,.9)}
+
+.next{text-align:left;margin:0 0 1.6rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem;color:var(--text-soft);font-size:.94rem}
+.next li::marker{color:var(--violet-500);font-weight:700}
+
+.done__actions{display:flex;flex-direction:column;gap:.7rem}
+
+.modal__foot{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.1rem 1.5rem;border-top:1px solid var(--line);background:var(--lav-50);
+}
+.modal__foot[hidden]{display:none}
+.modal__foot #btnNext{margin-left:auto}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+@media (max-width:1000px){
+  .cards{grid-template-columns:1fr}
+  .quotes{grid-template-columns:1fr}
+  .gallery{grid-template-columns:repeat(2,1fr)}
+  /* 3 métricas: em 2 colunas sobraria um vão. Mantém 3 até virar 1 no mobile. */
+  .stats{grid-template-columns:repeat(3,1fr);gap:1.4rem;padding:2.2rem 1.6rem}
+}
+
+@media (max-width:760px){
+  body{font-size:16px}
+  .nav__links{display:none}
+  .nav{padding:.75rem 0}
+  /* mesmo estilo, versão compacta: sem a seta e com menos respiro */
+  .nav__cta{padding:.62rem 1.05rem;font-size:.86rem}
+  .nav__cta svg{display:none}
+  .hero{padding:7.5rem 0 4.5rem}
+  .hero__title{font-size:clamp(2.1rem,9vw,3rem)}
+  .hero__trust{gap:1.4rem}
+  .hero__trust li{flex:1 1 30%}
+  .hero__scroll{display:none}
+  .hero__actions{width:100%}
+  .hero__actions .btn{flex:1 1 100%}
+  .gallery{gap:.75rem}
+  .stats{grid-template-columns:1fr;gap:1.8rem;padding:2rem 1.4rem}
+  .foot__inner{flex-direction:column;text-align:center}
+  .modal{padding:0}
+  .modal__panel{width:100%;max-height:100svh;height:100svh;border-radius:0;border:0}
+  .field-row{grid-template-columns:1fr}
+  .opt__txt em{font-size:.8rem}
+  .marquee__track{font-size:.88rem;gap:1.6rem}
+}
+
+@media (max-width:420px){
+  .opt{padding:.85rem .9rem;gap:.75rem}
+  .opt__ico{width:38px;height:38px;font-size:1.25rem}
+  .step__q{font-size:1.22rem}
+}
+
+/* =========================================================
+   ACESSIBILIDADE / PREFERÊNCIAS
+   ========================================================= */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;scroll-behavior:auto !important;
+  }
+  [data-reveal]{opacity:1;transform:none}
+  [data-parallax]{transform:none !important}
+  .hero__video{opacity:1}
+}
+
+@media print{
+  .nav,.modal,.hero__bg,.marquee,.hero__scroll{display:none !important}
+  body{background:#fff;color:#000}
+}

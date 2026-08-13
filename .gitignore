@@ -1,0 +1,41 @@
+# Dependências (o projeto é vanilla, mas caso alguém rode npm aqui)
+node_modules/
+package-lock.json
+
+# Arquivos de sistema
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Claude Code: launch.json é do projeto (fica versionado),
+# settings.local.json são permissões desta máquina (não fica)
+.claude/settings.local.json
+
+# Logs e temporários
+*.log
+npm-debug.log*
+.tmp/
+*.tmp
+
+# Segredos — se um dia a página ganhar backend/endpoint
+.env
+.env.*
+!.env.example
+
+# Saída de build, se algum dia houver
+dist/
+build/
+
+# NOTA sobre os arquivos grandes:
+# assets/video/Video background.mp4 (23,8 MB) e assets/img/_originais/ (13 MB)
+# são os ORIGINAIS enviados. Estão versionados de propósito, porque são as
+# únicas cópias desse material. Não vão para produção — veja o checklist do
+# README. Se um dia o repositório precisar ficar leve, é só adicioná-los aqui
+# e reescrever o histórico com git-filter-repo.

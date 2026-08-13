@@ -1,0 +1,20 @@
+# Normaliza quebras de linha: LF no repositório, nativo no disco.
+# Sem isso, um projeto editado no Windows entra no histórico com CRLF e
+# qualquer colaborador em Mac/Linux vê o arquivo inteiro como alterado.
+* text=auto
+
+# Fonte: sempre LF
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# Binários: não mexer
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.mp4   binary
+*.mov   binary
+*.ico   binary

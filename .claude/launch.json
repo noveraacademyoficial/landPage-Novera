@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "novera-landing",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve", "."],
+      "port": 4321,
+      "autoPort": true
+    }
+  ]
+}
