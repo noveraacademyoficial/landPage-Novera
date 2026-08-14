@@ -312,10 +312,18 @@ Dois arquivos cuidam do resto:
 - **`.vercelignore`** — tira do deploy os ~37 MB de mídia original
   (`assets/img/_originais/` e `assets/video/Video background.mp4`). Eles estão no Git
   de propósito, como backup, mas não têm por que ser servidos ao público.
-- **`vercel.json`** — cabeçalhos de segurança e política de cache:
-  HTML sempre revalidado, `/assets/*` com 1 dia de cache e revalidação em segundo
-  plano por 7 dias. O cache não é eterno porque os nomes de arquivo não têm hash —
-  com `immutable`, trocar uma foto deixaria o visitante recorrente vendo a antiga.
+- **`vercel.json`** — cabeçalhos de segurança e política de cache, separada por tipo:
+  - **HTML, JS e CSS: `no-cache`.** Não significa "não guarde", e sim "confirme comigo
+    antes de usar". O navegador manda o ETag, o servidor responde `304` se nada mudou —
+    round-trip pequeno, sem baixar de novo. **Toda correção chega na hora.**
+  - **Imagens e vídeo: 1 dia**, com revalidação em segundo plano por 7 dias. São
+    pesados e mudam pouco.
+
+  > Isso já causou um problema real: com `max-age=86400` no JS, quem tinha visitado o
+  > site antes de uma correção continuava rodando o código antigo por até 24 h, direto
+  > do cache, sem consultar o servidor. O lead entrava no banco, mas a mensagem do
+  > WhatsApp saía sem os dados do diagnóstico. Arquivos de código não podem ficar
+  > presos em cache enquanto os nomes não tiverem hash de conteúdo.
 
 ### Domínio
 
