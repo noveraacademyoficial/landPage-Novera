@@ -6,6 +6,13 @@
 assets/img/_originais/
 assets/video/Video background.mp4
 
+# Dependências: existem só para um eventual build futuro. A página é
+# estática e não importa nada de node_modules em tempo de execução.
+node_modules/
+
+# Skills de agente — ferramenta de desenvolvimento, não do site
+.agents/
+
 # Documentação e configuração de ferramenta
 README.md
 .claude/

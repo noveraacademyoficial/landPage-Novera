@@ -1,0 +1,14 @@
+{
+  "name": "landpage-novera",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page da Novera Academy — site estático com diagnóstico de 5 etapas e captura de leads no Supabase",
+  "//": "A página NÃO importa estes pacotes: ela é estática, sem build, e fala com o Supabase pela API REST. Eles estão aqui para scripts Node e para o dia em que o projeto ganhar um framework.",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3"
+  }
+}

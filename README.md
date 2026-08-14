@@ -162,11 +162,9 @@ const CONFIG = {
   2. **"Falar agora no WhatsApp"** (tela de resultado) → mensagem detalhada, montada
      com todas as respostas do diagnóstico.
 - **`ofertaMsg`** — a mensagem pré-preenchida do botão "Ver minha oferta".
-- **`endpoint`** — opcional. Com `null`, o lead fica só no `localStorage` do visitante,
-  ou seja: **você não recebe nada**. Para receber de verdade, aponte para um destes:
-  - [Formspree](https://formspree.io) — mais rápido de configurar, aceita JSON via POST
-  - n8n / Make / Zapier — webhook que joga direto no seu CRM ou planilha
-  - Endpoint próprio (Node, PHP, Supabase Edge Function…)
+- **`supabase`** — já configurado, é para onde os leads vão hoje (ver seção abaixo).
+- **`endpoint`** — opcional. Se preenchido, o lead vai para lá **em vez** do Supabase.
+  Serve para Formspree, n8n/Make/Zapier ou uma API própria.
 
 O payload enviado:
 
@@ -189,7 +187,63 @@ O payload enviado:
 ```
 
 As respostas são gravadas no `localStorage` **a cada clique**, não só no envio final —
-então um lead que abandona no meio deixa rastro para remarketing.
+então um lead que abandona no meio deixa rastro para remarketing. Mas atenção: esse
+rastro fica no navegador **do visitante**. Só o envio do formulário grava no Supabase.
+
+---
+
+## 2b. Supabase — onde os leads caem
+
+Projeto `cnrdaxjglkxxlcultkjg` (região São Paulo), tabela `public.leads`.
+Cada envio do formulário vira uma linha, com as 5 respostas, os dados de contato,
+o agendamento (quando houver), o plano recomendado e a origem do tráfego.
+
+### Segurança: por que a chave no código não é um problema
+
+A chave *publishable* fica visível no `main.js` — isso é por design, ela vai para o
+navegador de todo visitante. Quem protege os dados é o **RLS** da tabela:
+
+```sql
+alter table public.leads enable row level security;
+
+create policy "qualquer visitante pode enviar o formulario"
+  on public.leads for insert
+  to anon, authenticated
+  with check (true);
+```
+
+Há policy **só para INSERT**. Sem policy de `select`, `update` ou `delete`, essas
+operações ficam negadas por padrão. Testado com a chave real: `SELECT` devolve `[]`,
+e tentativas de `DELETE`/`UPDATE` não alteram nada.
+
+> A chave **secreta** (`service_role`) ignora RLS por completo. Ela nunca pode entrar
+> neste projeto nem no Git — use-a só no painel do Supabase ou em servidor.
+
+Para ler os leads, use o Table Editor do painel, ou conecte o banco a um BI.
+
+### Por que a página não usa `@supabase/supabase-js`
+
+Os pacotes `@supabase/supabase-js` e `@supabase/ssr` estão no `package.json`, mas a
+página **não os importa**. O site é estático, sem bundler — um `<script>` comum não
+consegue resolver `import` de `node_modules`. E `@supabase/ssr` é para renderização
+no servidor com sessão em cookie, que não existe aqui e serve a autenticação, que o
+projeto não usa.
+
+A inserção é feita com um `fetch` direto na API REST (PostgREST) do Supabase, em
+`send()`. Zero dependência em tempo de execução, mesmo resultado.
+
+**Não use `navigator.sendBeacon` para o Supabase.** Ele não permite definir cabeçalhos
+(`apikey` e `Authorization` são obrigatórios) e o `Content-Type: application/json`
+dispara um preflight de CORS que o beacon não executa — ele retornaria `true` e a
+requisição morreria em silêncio. O código usa `fetch` com `keepalive`, que sobrevive
+à saída da página do mesmo jeito.
+
+### Onde ficam as credenciais
+
+Em `CONFIG.supabase`, no topo de `assets/js/main.js`. O `.env` existe e tem os mesmos
+valores, mas **não é lido pela página**: sem build, nada resolve `.env` em tempo de
+execução, e o prefixo `NEXT_PUBLIC_` só significa algo para o Next.js. Se um dia o
+projeto ganhar um framework, migre para as variáveis e mantenha os dois em sincronia.
 
 ---
 
@@ -342,7 +396,7 @@ diagnóstico aberto.
       `index.html`. São afirmações públicas que eu não pude verificar:
       93% · +6 países · +6 estados, e as listas ("Irlanda · Reino Unido · Portugal ·
       Itália · Espanha · França" e "SP · RJ · MG · PR · SC · RS").
-- [ ] `CONFIG.endpoint` apontando para onde os leads devem chegar
+- [x] Destino dos leads configurado (Supabase, tabela `public.leads`, RLS ativo)
 - [ ] Domínio real no `canonical` e nas tags Open Graph
 - [ ] Depoimentos substituídos por reais (os atuais são exemplos)
 - [ ] Apagar `assets/img/_originais/` e `assets/video/Video background.mp4` antes do deploy

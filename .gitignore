@@ -1,6 +1,12 @@
-# Dependências (o projeto é vanilla, mas caso alguém rode npm aqui)
+# Dependências. O package-lock.json FICA versionado: ele trava as versões
+# exatas, então todo mundo instala o mesmo.
 node_modules/
-package-lock.json
+
+# Skills de agente: reconstruídas com `npx skills add` a partir do
+# skills-lock.json, que é o que fica versionado. Os symlinks em
+# .claude/skills/ não sobrevivem bem ao Git no Windows.
+.agents/
+.claude/skills/
 
 # Arquivos de sistema
 Thumbs.db

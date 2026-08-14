@@ -22,8 +22,23 @@
     whatsappB64: 'NTU0ODk5ODM3NDIzMQ==',
     // Mensagem pré-preenchida do botão "Ver minha oferta"
     ofertaMsg: 'Quero garantir minha oferta especial.',
-    // Endpoint opcional para receber o lead (Formspree, n8n, Make, API própria…).
-    // Deixe null para salvar apenas no localStorage.
+    // Supabase — destino dos leads.
+    //
+    // Estes valores estão AQUI, e não no .env, porque a página é estática: sem
+    // build, nada lê .env em tempo de execução. Se um dia o projeto ganhar um
+    // framework, migre para variáveis de ambiente e mantenha o .env em sincronia.
+    //
+    // A chave publishable é pública por natureza — ela vai para o navegador de
+    // todo visitante. Quem protege os dados é o RLS da tabela: a policy permite
+    // apenas INSERT, então ninguém consegue ler os leads com esta chave.
+    supabase: {
+      url: 'https://cnrdaxjglkxxlcultkjg.supabase.co',
+      key: 'sb_publishable_BycmRclN5gLTUoTgueG5HA_YMdZmT7B',
+      tabela: 'leads'
+    },
+
+    // Endpoint alternativo (Formspree, n8n, API própria). Se preenchido, o lead
+    // é enviado para cá EM VEZ do Supabase.
     endpoint: null,
     // Chave usada no localStorage
     storageKey: 'novera:diagnostico'
@@ -469,6 +484,11 @@
     answers.email    = email.value.trim();
     answers.telefone = fone.value.trim();
 
+    // O plano é a informação mais útil para o comercial abrir a conversa,
+    // então entra no registro. Calculado ANTES do envio — antes ele só existia
+    // em finish(), que roda depois, e nunca chegava ao banco.
+    answers.plano = recomendar().nome;
+
     save();
     send();
 
@@ -501,11 +521,65 @@
     } catch (_) { /* modo privado / storage cheio: segue sem persistir */ }
   }
 
-  function send() {
-    if (!CONFIG.endpoint) return;
-    const body = JSON.stringify(payload());
+  /* O front usa camelCase e nomes curtos; a tabela usa snake_case.
+     Esta função é o contrato entre os dois — se mudar coluna no banco,
+     mude aqui também. */
+  function linhaSupabase() {
+    const p = payload();
+    return {
+      nome:        p.nome,
+      email:       p.email,
+      telefone:    p.telefone,
+      objetivo:    p.objetivo    || null,
+      nivel:       p.nivel       || null,
+      dificuldade: p.dificuldade || null,
+      prazo:       p.prazo       || null,
+      conversa:    p.conversa    || null,
+      agenda_data: p.data        || null,
+      agenda_hora: p.hora        || null,
+      plano:       p.plano       || null,
+      enviado_em:  p.enviadoEm,
+      origem:      p.origem,
+      referrer:    p.referrer
+    };
+  }
 
-    // sendBeacon sobrevive à saída da página; fetch é o fallback
+  function send() {
+    // Endpoint próprio, se configurado, tem prioridade sobre o Supabase
+    if (CONFIG.endpoint) { enviarParaEndpoint(); return; }
+
+    const sb = CONFIG.supabase;
+    if (!sb || !sb.url || !sb.key) return;
+
+    // Por que não sendBeacon aqui: ele não permite definir cabeçalhos, e o
+    // Supabase exige apikey + Authorization. Além disso o Content-Type json
+    // dispararia um preflight de CORS que o beacon não sabe executar — ele
+    // retornaria true e a requisição morreria calada. fetch com keepalive
+    // sobrevive à saída da página do mesmo jeito.
+    fetch(sb.url + '/rest/v1/' + sb.tabela, {
+      method: 'POST',
+      headers: {
+        'apikey': sb.key,
+        'Authorization': 'Bearer ' + sb.key,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(linhaSupabase()),
+      keepalive: true
+    })
+      .then(function (r) {
+        if (r.ok) return null;
+        return r.text().then(function (t) { throw new Error(r.status + ' — ' + t); });
+      })
+      .catch(function (e) {
+        // Falhar em silêncio esconderia perda de lead. O dado continua no
+        // localStorage do visitante, mas o negócio precisa saber que falhou.
+        console.error('[novera] não consegui gravar o lead no Supabase:', e.message);
+      });
+  }
+
+  function enviarParaEndpoint() {
+    const body = JSON.stringify(payload());
     if (navigator.sendBeacon) {
       const ok = navigator.sendBeacon(CONFIG.endpoint, new Blob([body], { type: 'application/json' }));
       if (ok) return;
@@ -515,7 +589,7 @@
       headers: { 'Content-Type': 'application/json' },
       body,
       keepalive: true
-    }).catch(() => { /* lead já está no localStorage */ });
+    }).catch(function () { /* lead já está no localStorage */ });
   }
 
   /* =========================================================
