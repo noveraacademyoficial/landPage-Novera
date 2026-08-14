@@ -38,7 +38,11 @@
 
 <!-- Poster do hero: primeira coisa visível, entra antes do vídeo carregar -->
 <link rel="preload" as="image" href="assets/video/poster.jpg">
-<link rel="stylesheet" href="assets/css/styles.css">
+<!-- ?v= é o "carimbo" da versão. O navegador guarda em cache por URL, então
+     mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
+     antiga guardada. O index.html é sempre revalidado, então o carimbo novo
+     chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
+<link rel="stylesheet" href="assets/css/styles.css?v=2">
 
 <script type="application/ld+json">
 {
@@ -549,6 +553,7 @@
   </div>
 </div>
 
-<script src="assets/js/main.js" defer></script>
+<!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
+<script src="assets/js/main.js?v=2" defer></script>
 </body>
 </html>

@@ -280,6 +280,19 @@
   /* ---------- Abrir / fechar ---------- */
   function openQuiz() {
     lastFocused = document.activeElement;
+
+    // Quem já concluiu e clica em "Obter oferta" de novo quer refazer o
+    // diagnóstico — antes reabria na tela de resultado antiga, sem caminho
+    // de volta às perguntas a não ser pelo "Voltar".
+    if (current === 'done') {
+      Object.keys(answers).forEach((k) => { delete answers[k]; });
+      // a seleção é marcada por aria-checked, não por classe
+      $$('.opt', modal).forEach((o) => o.setAttribute('aria-checked', 'false'));
+      if (agenda) agenda.hidden = true;
+      leadForm.reset();   // só nome/e-mail/telefone: a data fica na etapa 5
+      current = 1;
+    }
+
     modal.hidden = false;
     document.body.classList.add('is-locked');
     updateCtaBar();
