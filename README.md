@@ -186,9 +186,20 @@ O payload enviado:
 }
 ```
 
-As respostas são gravadas no `localStorage` **a cada clique**, não só no envio final —
-então um lead que abandona no meio deixa rastro para remarketing. Mas atenção: esse
-rastro fica no navegador **do visitante**. Só o envio do formulário grava no Supabase.
+### Só o formulário concluído vira registro — por decisão
+
+O `localStorage` guarda as respostas a cada clique, mas isso fica no navegador **do
+visitante** e nunca sai de lá: serve para ele não perder o progresso, não para você.
+
+O gravação no Supabase acontece **uma única vez**, no envio do formulário
+(`send()`, chamado só no submit). Quem responde as 5 perguntas e desiste na tela de
+contato não gera linha nenhuma no banco.
+
+Isso é intencional: a tabela fica só com leads reais, com nome e contato, sem ruído
+de visitante curioso. Se um dia quiser capturar os abandonos para remarketing, o
+ponto de mudança é chamar `send()` também ao fim da pergunta 5 — mas aí vale separar
+em outra tabela, ou marcar o registro como parcial, para não misturar com lead
+qualificado.
 
 ---
 
