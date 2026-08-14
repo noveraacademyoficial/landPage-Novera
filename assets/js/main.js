@@ -448,11 +448,17 @@
   const foneInput = $('#leadFone');
   if (foneInput) {
     foneInput.addEventListener('input', (e) => {
-      let d = e.target.value.replace(/\D/g, '').slice(0, 11);
-      if (d.length > 6)      d = `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-      else if (d.length > 2) d = `(${d.slice(0,2)}) ${d.slice(2)}`;
-      else if (d.length > 0) d = `(${d}`;
-      e.target.value = d;
+      const d = e.target.value.replace(/\D/g, '').slice(0, 11);
+      // O bloco do meio muda de tamanho conforme o número:
+      // celular tem 11 dígitos → (11) 98765-4321  (5 no meio)
+      // fixo tem 10           → (48) 3333-4444    (4 no meio)
+      // Antes o corte era fixo em 5 e o de 10 dígitos saía como (48) 99991-111.
+      let out = '';
+      if (d.length > 10)      out = `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+      else if (d.length > 6)  out = `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+      else if (d.length > 2)  out = `(${d.slice(0,2)}) ${d.slice(2)}`;
+      else if (d.length > 0)  out = `(${d}`;
+      e.target.value = out;
     });
   }
 
@@ -492,11 +498,12 @@
     save();
     send();
 
-    // "Ver minha oferta" leva ao WhatsApp do comercial com a mensagem padrão.
+    // "Ver minha oferta" leva ao WhatsApp do comercial com o diagnóstico
+    // completo — o vendedor abre a conversa já sabendo quem é a pessoa.
     // Abre em nova aba (e não no lugar da página) para o lead não perder o
     // diagnóstico: a tela de resultado fica montada aqui atrás.
     window.open(
-      `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(CONFIG.ofertaMsg)}`,
+      `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`,
       '_blank',
       'noopener'
     );
@@ -643,6 +650,36 @@
     return passos;
   }
 
+  /* Mensagem que o lead leva ao WhatsApp do comercial.
+     Carrega o diagnóstico inteiro para o vendedor abrir a conversa já sabendo
+     quem é a pessoa, o que ela quer e o que foi recomendado — sem precisar
+     consultar o banco. Os *asteriscos* viram negrito no WhatsApp.
+     Usada nos DOIS caminhos: no envio do formulário e no botão da tela final. */
+  function mensagemWhatsApp() {
+    const plano = recomendar();
+    const quando = formatarQuando();
+
+    return [
+      `Olá! Sou *${answers.nome || 'um interessado'}* e acabei de fazer o diagnóstico no site da Novera Academy.`,
+      '',
+      '*MEU DIAGNÓSTICO*',
+      `• Objetivo: ${answers.objetivo || '-'}`,
+      `• Nível atual: ${answers.nivel || '-'}`,
+      `• Maior dificuldade: ${answers.dificuldade || '-'}`,
+      `• Quero começar: ${answers.prazo || '-'}`,
+      answers.conversa ? `• Conversa inicial: ${answers.conversa}` : null,
+      quando ? `• Horário escolhido: ${quando}` : null,
+      '',
+      `*Plano recomendado:* ${plano.nome}`,
+      '',
+      '*MEUS DADOS*',
+      `• E-mail: ${answers.email || '-'}`,
+      `• WhatsApp: ${answers.telefone || '-'}`,
+      '',
+      CONFIG.ofertaMsg
+    ].filter((linha) => linha !== null).join('\n');
+  }
+
   function formatarQuando() {
     if (!answers.data) return null;
     const [a, m, d] = answers.data.split('-');
@@ -675,17 +712,9 @@
       lista.appendChild(li);
     });
 
-    const msg = [
-      `Olá! Sou ${answers.nome || 'um interessado'} e acabei de fazer o diagnóstico no site da Novera Academy.`,
-      `Objetivo: ${answers.objetivo || '-'}`,
-      `Nível: ${answers.nivel || '-'}`,
-      `Dificuldade: ${answers.dificuldade || '-'}`,
-      `Quero começar: ${answers.prazo || '-'}`,
-      answers.data ? `Melhor horário: ${formatarQuando()}` : null,
-      `Plano recomendado: ${plano.nome}`
-    ].filter(Boolean).join('\n');
-
-    $('#waBtn').href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+    // Mesma mensagem completa do envio do formulário, para o vendedor receber
+    // o mesmo histórico venha o lead por qual caminho vier.
+    $('#waBtn').href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
     goTo('done', 'forward');
 
