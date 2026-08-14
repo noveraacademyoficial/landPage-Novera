@@ -212,23 +212,50 @@ o agendamento (quando houver), o plano recomendado e a origem do tráfego.
 ### Segurança: por que a chave no código não é um problema
 
 A chave *publishable* fica visível no `main.js` — isso é por design, ela vai para o
-navegador de todo visitante. Quem protege os dados é o **RLS** da tabela:
+navegador de todo visitante. **Ela não é o segredo; o segredo é o que ela pode fazer.**
+São três camadas independentes:
+
+**1. Privilégio mínimo (GRANT).** O papel `anon` tem exatamente um privilégio na
+tabela: `INSERT`. Não tem `SELECT`, `UPDATE`, `DELETE` nem `TRUNCATE`.
 
 ```sql
-alter table public.leads enable row level security;
-
-create policy "qualquer visitante pode enviar o formulario"
-  on public.leads for insert
-  to anon, authenticated
-  with check (true);
+revoke all on table public.leads from anon, authenticated;
+grant insert on table public.leads to anon, authenticated;
 ```
 
-Há policy **só para INSERT**. Sem policy de `select`, `update` ou `delete`, essas
-operações ficam negadas por padrão. Testado com a chave real: `SELECT` devolve `[]`,
-e tentativas de `DELETE`/`UPDATE` não alteram nada.
+Isso importa porque antes o RLS era a *única* barreira: os grants padrão do Supabase
+davam tudo ao `anon`, e um RLS desativado por acidente exporia a base inteira. Agora
+duas coisas precisam falhar ao mesmo tempo.
 
-> A chave **secreta** (`service_role`) ignora RLS por completo. Ela nunca pode entrar
-> neste projeto nem no Git — use-a só no painel do Supabase ou em servidor.
+**2. RLS.** Policy só de `INSERT`; sem policy de leitura, alteração ou remoção, essas
+operações ficam negadas por padrão.
+
+**3. Validação no banco (CHECK).** A validação do formulário roda no navegador e é
+trivial de contornar — quem chama a API REST direto não passa por ela. As constraints
+impõem tamanho máximo em todos os campos (um robô não grava uma string de 50 MB),
+formato de e-mail, telefone só com dígitos e símbolos de máscara, e agendamento em
+data plausível.
+
+**4. Limite de envios.** Um gatilho `before insert` bloqueia acima de **5 envios por
+origem a cada 10 minutos**, para ninguém encher a tabela de lixo e enterrar leads
+reais. Guarda o **hash** do IP, não o IP — dá para identificar abuso sem armazenar
+dado pessoal à toa (LGPD).
+
+Testado com a chave real, do navegador, contra o site publicado:
+
+| Tentativa | Resultado |
+|---|---|
+| Ler os leads | `401` — privilégio insuficiente |
+| Apagar todos | `401` — privilégio insuficiente |
+| Alterar registros | `401` — privilégio insuficiente |
+| Nome de 50 mil caracteres | `400` — viola constraint |
+| E-mail inválido | `400` — viola constraint |
+| Telefone com `<script>` | `400` — viola constraint |
+| 6º envio em 10 min | `400` — limite de envios |
+| **Envio legítimo pelo site** | **`201` — gravado** |
+
+> A chave **secreta** (`service_role`) ignora tudo isso. Ela nunca pode entrar neste
+> projeto nem no Git — use-a só no painel do Supabase ou em servidor.
 
 Para ler os leads, use o Table Editor do painel, ou conecte o banco a um BI.
 
