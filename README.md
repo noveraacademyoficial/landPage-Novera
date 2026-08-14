@@ -44,6 +44,27 @@ Cada uma leva um brilho radial de baixa opacidade no topo — evita o aspecto ch
 virar gradiente. Nas seções escuras, cards, depoimentos, FAQ e CTA intermediário viram
 **vidro fosco** (`--card-bg` + `--card-blur`) e voltam a branco sólido no tema claro.
 
+### Planos
+
+Seção `#planos`, entre Resultados e Dúvidas — depois da prova social, antes das
+objeções. Três cartões (`.plano`), com o do meio em destaque (`.plano--destaque`).
+
+- **Sem preço na página.** Cada cartão diz que valores e promoções são passados no
+  diagnóstico. Isso mantém o funil: todo botão da seção abre o diagnóstico
+  (`data-open-quiz`), em vez de mandar direto para o WhatsApp sem capturar o lead.
+- **Cor por plano:** Grupo turquesa, Performance no gradiente da marca, Basic violeta.
+  Sem cor própria, Grupo e Basic pareceriam o mesmo nível — e são produtos diferentes.
+- **`margin-top:auto` no botão** encosta os três no rodapé do cartão, para ficarem
+  alinhados mesmo com quantidades diferentes de item.
+- A marca de conferido é desenhada em CSS (`.plano__item::before`), não são 26 SVGs
+  repetidos no HTML.
+
+> **Atenção ao nome dos planos.** O diagnóstico recomenda trilhas com outros nomes
+> (*Novera Career · Módulo Breakthrough*, etc.), definidas em `recomendar()` no
+> `main.js`. São taxonomias diferentes: a trilha responde *para quê* você estuda, o
+> plano responde *quanto acompanhamento* você quer. Se isso confundir o visitante ou
+> o comercial, vale unificar a nomenclatura.
+
 ### Alinhamento
 
 Um sistema único para a página inteira, definido em `.shead`:
