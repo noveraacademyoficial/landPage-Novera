@@ -42,7 +42,7 @@
      mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
      antiga guardada. O index.html é sempre revalidado, então o carimbo novo
      chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=6">
+<link rel="stylesheet" href="assets/css/styles.css?v=7">
 
 <script type="application/ld+json">
 {
@@ -615,7 +615,10 @@
             </label>
             <label class="field">
               <span>Horário</span>
-              <input type="time" id="agendaHora" name="agendaHora" step="1800" value="10:00">
+              <!-- sem step: com step=1800 só :00 e :30 eram aceitos, e digitar
+                   14:15 deixava o campo inválido. Agora aceita qualquer minuto,
+                   digitado ou escolhido no relógio. -->
+              <input type="time" id="agendaHora" name="agendaHora" value="10:00">
             </label>
           </div>
 
@@ -682,6 +685,6 @@
 </div>
 
 <!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
-<script src="assets/js/main.js?v=6" defer></script>
+<script src="assets/js/main.js?v=7" defer></script>
 </body>
 </html>

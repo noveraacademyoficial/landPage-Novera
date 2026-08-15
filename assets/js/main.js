@@ -433,15 +433,27 @@
       save();
     });
 
+    // Guardar o valor pode ser no 'change'; CORRIGIR não pode.
+    // Em campo de hora o 'change' dispara a cada segmento digitado: ao teclar
+    // o primeiro dígito de "14:30" o valor passa por 01:00, cai fora da janela
+    // e era corrigido para 09:00 no meio da digitação. A correção foi para o
+    // 'blur', quando a pessoa terminou de digitar.
     horaInput.addEventListener('change', () => {
-      if (horaInput.value && (horaInput.value < HORA_MIN || horaInput.value > HORA_MAX)) {
+      answers.hora = horaInput.value;
+      save();
+    });
+
+    horaInput.addEventListener('blur', () => {
+      if (!horaInput.value) return;
+
+      if (horaInput.value < HORA_MIN || horaInput.value > HORA_MAX) {
         horaInput.value = horaInput.value < HORA_MIN ? HORA_MIN : HORA_MAX;
         mostrarAviso(`Atendemos das ${HORA_MIN} às ${HORA_MAX}. Ajustamos para ${horaInput.value}.`);
+        answers.hora = horaInput.value;
+        save();
       } else {
         mostrarAviso('');
       }
-      answers.hora = horaInput.value;
-      save();
     });
   }
 
