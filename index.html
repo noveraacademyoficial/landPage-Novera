@@ -42,7 +42,7 @@
      mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
      antiga guardada. O index.html é sempre revalidado, então o carimbo novo
      chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=3">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
 
 <script type="application/ld+json">
 {
@@ -599,6 +599,15 @@
 
         <div class="agenda" id="agenda" hidden>
           <p class="agenda__title">Escolha o melhor momento para falarmos:</p>
+
+          <!-- Antes dos campos, de propósito: a regra precisa ser lida ANTES
+               de a pessoa escolher, não depois de errar. -->
+          <p class="agenda__janela">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Atendimento de <b>segunda a sexta</b>, das <b>09h às 20h</b>
+            <span>horário de Brasília</span>
+          </p>
+
           <div class="field-row">
             <label class="field">
               <span>Data</span>
@@ -609,7 +618,9 @@
               <input type="time" id="agendaHora" name="agendaHora" step="1800" value="10:00">
             </label>
           </div>
-          <p class="agenda__hint">Atendimento de segunda a sexta, das 09h às 20h (horário de Brasília).</p>
+
+          <!-- role=status faz o leitor de tela anunciar a correção -->
+          <p class="agenda__aviso" id="agendaAviso" role="status" hidden></p>
         </div>
       </section>
 
@@ -646,12 +657,6 @@
           <h3 id="doneTitle">Diagnóstico concluído!</h3>
           <p id="doneMsg">Obrigado! Já temos tudo o que precisávamos para montar sua recomendação.</p>
 
-          <div class="plan" id="planBox">
-            <p class="plan__label">Plano recomendado para você</p>
-            <p class="plan__name" id="planName">—</p>
-            <p class="plan__why" id="planWhy">—</p>
-          </div>
-
           <ol class="next" id="nextSteps"></ol>
 
           <div class="done__actions">
@@ -676,6 +681,6 @@
 </div>
 
 <!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
-<script src="assets/js/main.js?v=3" defer></script>
+<script src="assets/js/main.js?v=4" defer></script>
 </body>
 </html>

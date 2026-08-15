@@ -378,15 +378,68 @@
     });
   });
 
-  /* ---------- Data mínima = hoje ---------- */
+  /* ---------- Agendamento: só dias úteis, das 09h às 20h ----------
+     O <input type="date"> não sabe desabilitar sábado e domingo, então a
+     regra é aplicada aqui: a data sugerida já cai num dia útil, e escolher
+     fim de semana avisa e empurra para a segunda seguinte. */
   const dataInput = $('#agendaData');
-  if (dataInput) {
-    const hoje = new Date();
-    const iso = new Date(hoje.getTime() - hoje.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-    dataInput.min = iso;
-    dataInput.value = iso;
-    dataInput.addEventListener('change', () => { answers.data = dataInput.value; save(); });
-    $('#agendaHora').addEventListener('change', (e) => { answers.hora = e.target.value; save(); });
+  const horaInput = $('#agendaHora');
+
+  const HORA_MIN = '09:00';
+  const HORA_MAX = '20:00';
+
+  const paraISO = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const deISO   = (s) => { const [a, m, d] = s.split('-').map(Number); return new Date(a, m - 1, d); };
+  const fimDeSemana = (d) => d.getDay() === 0 || d.getDay() === 6;
+
+  // Devolve a própria data se for dia útil; senão, a segunda-feira seguinte.
+  function proximoDiaUtil(d) {
+    const r = new Date(d);
+    while (fimDeSemana(r)) r.setDate(r.getDate() + 1);
+    return r;
+  }
+
+  if (dataInput && horaInput) {
+    const primeiroUtil = proximoDiaUtil(new Date());
+    dataInput.min   = paraISO(new Date());
+    dataInput.value = paraISO(primeiroUtil);
+    horaInput.min   = HORA_MIN;
+    horaInput.max   = HORA_MAX;
+
+    const aviso = $('#agendaAviso');
+    function mostrarAviso(texto) {
+      if (!aviso) return;
+      aviso.textContent = texto || '';
+      aviso.hidden = !texto;
+    }
+
+    dataInput.addEventListener('change', () => {
+      if (!dataInput.value) return;
+      const escolhida = deISO(dataInput.value);
+
+      if (fimDeSemana(escolhida)) {
+        const corrigida = proximoDiaUtil(escolhida);
+        dataInput.value = paraISO(corrigida);
+        const dia = escolhida.getDay() === 6 ? 'sábado' : 'domingo';
+        mostrarAviso(`Não atendemos ${dia}. Agendamos para ${corrigida.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}.`);
+      } else {
+        mostrarAviso('');
+      }
+
+      answers.data = dataInput.value;
+      save();
+    });
+
+    horaInput.addEventListener('change', () => {
+      if (horaInput.value && (horaInput.value < HORA_MIN || horaInput.value > HORA_MAX)) {
+        horaInput.value = horaInput.value < HORA_MIN ? HORA_MIN : HORA_MAX;
+        mostrarAviso(`Atendemos das ${HORA_MIN} às ${HORA_MAX}. Ajustamos para ${horaInput.value}.`);
+      } else {
+        mostrarAviso('');
+      }
+      answers.hora = horaInput.value;
+      save();
+    });
   }
 
   /* ---------- Troca de etapa ---------- */
@@ -503,11 +556,6 @@
     answers.email    = email.value.trim();
     answers.telefone = fone.value.trim();
 
-    // O plano é a informação mais útil para o comercial abrir a conversa,
-    // então entra no registro. Calculado ANTES do envio — antes ele só existia
-    // em finish(), que roda depois, e nunca chegava ao banco.
-    answers.plano = recomendar().nome;
-
     save();
     send();
 
@@ -557,7 +605,6 @@
       conversa:    p.conversa    || null,
       agenda_data: p.data        || null,
       agenda_hora: p.hora        || null,
-      plano:       p.plano       || null,
       enviado_em:  p.enviadoEm,
       origem:      p.origem,
       referrer:    p.referrer
@@ -613,29 +660,10 @@
   }
 
   /* =========================================================
-     9. RECOMENDAÇÃO DE PLANO
+     9. PRÓXIMOS PASSOS
+     A recomendação de plano saiu do relatório: a página tem uma seção
+     de planos própria (#planos), e as duas nomenclaturas conviviam mal.
      ========================================================= */
-  const PLANOS = {
-    'Crescer profissionalmente':   { nome: 'Novera Career',   why: 'Trilha focada em reuniões, entrevistas e comunicação corporativa — o inglês que aparece no seu próximo cargo.' },
-    'Viajar / Morar fora':         { nome: 'Novera Global',   why: 'Trilha de imersão em situações reais de viagem, mudança e vida no exterior — do aeroporto ao contrato de aluguel.' },
-    'Falar inglês com confiança':  { nome: 'Novera Fluency',  why: 'Trilha de conversação intensiva para destravar a fala e eliminar o medo de errar em público.' }
-  };
-
-  function recomendar() {
-    const base = PLANOS[answers.objetivo] || PLANOS['Falar inglês com confiança'];
-    const nivel = answers.nivel || 'Intermediário';
-    const modulo = nivel === 'Iniciante' ? ' · Módulo Foundations'
-                 : nivel === 'Avançado'  ? ' · Módulo Mastery'
-                 : ' · Módulo Breakthrough';
-
-    let why = base.why;
-    if (answers.dificuldade === 'Falar e conversar')          why += ' Com dobro de carga de speaking, já que travar na hora de falar é o seu ponto crítico.';
-    else if (answers.dificuldade === 'Entender / compreender') why += ' Com treino extra de listening em velocidade nativa, o seu principal gargalo hoje.';
-    else if (answers.dificuldade === 'Gramática e vocabulário') why += ' Com reforço estruturado de vocabulário aplicado — sem decoreba de regra solta.';
-
-    return { nome: base.nome + modulo, why };
-  }
-
   function proximosPassos() {
     const passos = [];
     const c = answers.conversa;
@@ -665,11 +693,10 @@
 
   /* Mensagem que o lead leva ao WhatsApp do comercial.
      Carrega o diagnóstico inteiro para o vendedor abrir a conversa já sabendo
-     quem é a pessoa, o que ela quer e o que foi recomendado — sem precisar
-     consultar o banco. Os *asteriscos* viram negrito no WhatsApp.
+     quem é a pessoa e o que ela quer — sem precisar consultar o banco.
+     Os *asteriscos* viram negrito no WhatsApp.
      Usada nos DOIS caminhos: no envio do formulário e no botão da tela final. */
   function mensagemWhatsApp() {
-    const plano = recomendar();
     const quando = formatarQuando();
 
     return [
@@ -682,8 +709,6 @@
       `• Quero começar: ${answers.prazo || '-'}`,
       answers.conversa ? `• Conversa inicial: ${answers.conversa}` : null,
       quando ? `• Horário escolhido: ${quando}` : null,
-      '',
-      `*Plano recomendado:* ${plano.nome}`,
       '',
       '*MEUS DADOS*',
       `• E-mail: ${answers.email || '-'}`,
@@ -706,16 +731,13 @@
      10. TELA FINAL
      ========================================================= */
   function finish() {
-    const plano = recomendar();
     const primeiroNome = (answers.nome || '').split(' ')[0];
 
     $('#doneTitle').textContent = primeiroNome
       ? `${primeiroNome}, seu diagnóstico está pronto!`
       : 'Seu diagnóstico está pronto!';
 
-    $('#doneMsg').textContent = 'Obrigado por responder. Com base nas suas respostas, esta é a recomendação da nossa equipe pedagógica.';
-    $('#planName').textContent = plano.nome;
-    $('#planWhy').textContent  = plano.why;
+    $('#doneMsg').textContent = 'Obrigado por responder. Nosso time já recebeu as suas respostas — veja os próximos passos abaixo.';
 
     const lista = $('#nextSteps');
     lista.innerHTML = '';
@@ -733,7 +755,7 @@
 
     // Ponto de integração com analytics (GA4, Meta Pixel, etc.)
     if (typeof window.dataLayer !== 'undefined') {
-      window.dataLayer.push({ event: 'novera_lead', plano: plano.nome, objetivo: answers.objetivo });
+      window.dataLayer.push({ event: 'novera_lead', objetivo: answers.objetivo, nivel: answers.nivel });
     }
   }
 

@@ -306,7 +306,13 @@ a{color:inherit;text-decoration:none}
   font-size:clamp(2.2rem,4.8vw,3.9rem);font-weight:800;margin-bottom:1.6rem;
   max-width:24ch;text-wrap:balance;
 }
-.hero__sub{font-size:clamp(1.02rem,1.6vw,1.2rem);color:var(--text-soft);max-width:56ch;margin-bottom:2.6rem}
+/* margin-inline:auto é o que centraliza de fato. O text-align:center do .hero
+   alinha o TEXTO dentro da caixa, mas a caixa em si — limitada a 56ch — ficava
+   encostada à esquerda do bloco, uns 236px fora do centro no desktop. */
+.hero__sub{
+  font-size:clamp(1.02rem,1.6vw,1.2rem);color:var(--text-soft);
+  max-width:56ch;margin:0 auto 2.6rem;
+}
 .hero__actions{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-bottom:3rem}
 
 .hero__trust{
@@ -819,7 +825,25 @@ a{color:inherit;text-decoration:none}
 }
 .agenda[hidden]{display:none}
 .agenda__title{font-family:var(--font-display);font-weight:600;font-size:.98rem;margin-bottom:.9rem}
-.agenda__hint{margin-top:.8rem;font-size:.8rem;color:var(--text-dim)}
+/* Janela de atendimento: era um rodapé cinza de 0.8rem que ninguém lia.
+   Agora vem antes dos campos, com contraste e ícone. */
+.agenda__janela{
+  display:flex;align-items:center;flex-wrap:wrap;gap:.1rem .45rem;
+  margin-bottom:1rem;padding:.7rem .9rem;border-radius:var(--r-md);
+  background:rgba(255,180,67,.12);
+  border:1px solid rgba(255,180,67,.34);
+  color:var(--text);font-size:.88rem;line-height:1.45;
+}
+.agenda__janela svg{flex:none;color:var(--amber-400);margin-right:.15rem}
+.agenda__janela b{font-weight:700;color:var(--amber-400)}
+.agenda__janela span{width:100%;font-size:.76rem;color:var(--text-dim)}
+
+/* Correção automática de fim de semana / fora do horário */
+.agenda__aviso{
+  margin-top:.7rem;padding:.6rem .8rem;border-radius:var(--r-sm);
+  background:rgba(226,65,154,.14);border:1px solid rgba(226,65,154,.4);
+  color:var(--text);font-size:.83rem;line-height:1.45;
+}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 
 .field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.9rem}
@@ -848,14 +872,8 @@ a{color:inherit;text-decoration:none}
 .done h3{font-size:1.7rem;margin-bottom:.7rem}
 .done > p{color:var(--text-soft);margin-bottom:1.6rem}
 
-.plan{
-  padding:1.5rem;border-radius:var(--r-md);text-align:left;margin-bottom:1.5rem;
-  background:linear-gradient(135deg,var(--violet-600),var(--violet-400));
-  color:#fff;
-}
-.plan__label{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82);font-weight:700;margin-bottom:.5rem}
-.plan__name{font-family:var(--font-display);font-size:1.32rem;font-weight:700;margin-bottom:.5rem}
-.plan__why{font-size:.93rem;color:rgba(255,255,255,.9)}
+/* (o bloco .plan do relatório saiu: a recomendação de plano foi removida
+   da tela final, que agora mostra só os próximos passos) */
 
 .next{text-align:left;margin:0 0 1.6rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem;color:var(--text-soft);font-size:.94rem}
 .next li::marker{color:var(--violet-500);font-weight:700}
