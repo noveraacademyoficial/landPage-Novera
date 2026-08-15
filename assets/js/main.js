@@ -276,21 +276,24 @@
   const answers = {};
   let current = 1;
   let lastFocused = null;
+  let concluiu = false;   // já chegou ao relatório nesta visita?
 
   /* ---------- Abrir / fechar ---------- */
   function openQuiz() {
     lastFocused = document.activeElement;
 
     // Quem já concluiu e clica em "Obter oferta" de novo quer refazer o
-    // diagnóstico — antes reabria na tela de resultado antiga, sem caminho
-    // de volta às perguntas a não ser pelo "Voltar".
-    if (current === 'done') {
+    // diagnóstico. Uso a flag, e não `current === 'done'`: quem concluiu e
+    // clicou em "Voltar" antes de fechar tem current = 6, e reabria no
+    // formulário de contato preenchido em vez de recomeçar.
+    if (concluiu) {
       Object.keys(answers).forEach((k) => { delete answers[k]; });
       // a seleção é marcada por aria-checked, não por classe
       $$('.opt', modal).forEach((o) => o.setAttribute('aria-checked', 'false'));
       if (agenda) agenda.hidden = true;
       leadForm.reset();   // só nome/e-mail/telefone: a data fica na etapa 5
       current = 1;
+      concluiu = false;
     }
 
     modal.hidden = false;
@@ -751,6 +754,7 @@
     // o mesmo histórico venha o lead por qual caminho vier.
     $('#waBtn').href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
+    concluiu = true;
     goTo('done', 'forward');
 
     // Ponto de integração com analytics (GA4, Meta Pixel, etc.)
