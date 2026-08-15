@@ -42,7 +42,7 @@
      mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
      antiga guardada. O index.html é sempre revalidado, então o carimbo novo
      chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=5">
+<link rel="stylesheet" href="assets/css/styles.css?v=6">
 
 <script type="application/ld+json">
 {
@@ -649,15 +649,16 @@
       </section>
 
       <!-- RESULTADO -->
+<!-- Tela de aviso. Não repete o diagnóstico (isso a pessoa lê no
+           WhatsApp): só confirma o envio e diz que o time entra em contato. -->
       <section class="step step--done" data-step="done" hidden>
         <div class="done">
           <div class="done__ring" aria-hidden="true">
             <svg viewBox="0 0 52 52" width="72" height="72"><circle class="done__circle" cx="26" cy="26" r="23"/><path class="done__check" d="M15 27l8 8 15-16" fill="none"/></svg>
           </div>
-          <h3 id="doneTitle">Diagnóstico concluído!</h3>
-          <p id="doneMsg">Obrigado! Já temos tudo o que precisávamos para montar sua recomendação.</p>
-
-          <ol class="next" id="nextSteps"></ol>
+          <h3 id="doneTitle">Diagnóstico realizado!</h3>
+          <p id="doneMsg">Recebemos as suas respostas.</p>
+          <p class="done__contato" id="doneContato">A equipe da Novera Academy vai entrar em contato pelo WhatsApp.</p>
 
           <div class="done__actions">
             <a class="btn btn--primary btn--lg" id="waBtn" href="#" target="_blank" rel="noopener">Falar agora no WhatsApp</a>
@@ -681,6 +682,6 @@
 </div>
 
 <!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
-<script src="assets/js/main.js?v=5" defer></script>
+<script src="assets/js/main.js?v=6" defer></script>
 </body>
 </html>

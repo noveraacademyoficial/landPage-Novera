@@ -562,10 +562,9 @@
     save();
     send();
 
-    // "Ver minha oferta" leva ao WhatsApp do comercial com o diagnóstico
-    // completo — o vendedor abre a conversa já sabendo quem é a pessoa.
-    // Abre em nova aba (e não no lugar da página) para o lead não perder o
-    // diagnóstico: a tela de resultado fica montada aqui atrás.
+    // O diagnóstico já vai para o WhatsApp do comercial aqui. A tela seguinte
+    // é só o aviso de que deu certo — não repete o conteúdo do diagnóstico,
+    // que a pessoa lê na própria conversa.
     window.open(
       `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`,
       '_blank',
@@ -663,35 +662,21 @@
   }
 
   /* =========================================================
-     9. PRÓXIMOS PASSOS
-     A recomendação de plano saiu do relatório: a página tem uma seção
-     de planos própria (#planos), e as duas nomenclaturas conviviam mal.
+     9. AVISO DE CONTATO
+     Uma frase só, ajustada ao que a pessoa respondeu sobre a conversa.
+     (A lista de próximos passos e a recomendação de plano saíram: a tela
+     final agora é aviso de envio, não relatório.)
      ========================================================= */
-  function proximosPassos() {
-    const passos = [];
-    const c = answers.conversa;
+  function avisoDeContato() {
+    const quando = formatarQuando();
 
-    if (c === 'Sim, quero agendar') {
-      passos.push('Nosso time entra em contato pelo WhatsApp em até 2 horas úteis para combinar o melhor horário.');
-    } else if (c === 'Sim, mas preciso escolher um horário') {
-      const quando = formatarQuando();
-      passos.push(quando
-        ? `Sua conversa está reservada para <b>${quando}</b>. Você recebe a confirmação por e-mail e WhatsApp.`
-        : 'Confirme a data e o horário com o nosso time pelo WhatsApp.');
-    } else {
-      passos.push('Enviamos por e-mail o material completo sobre o método, as turmas e os depoimentos de alunos.');
+    if (answers.conversa === 'Sim, mas preciso escolher um horário' && quando) {
+      return `Sua conversa está reservada para ${quando}. A equipe da Novera Academy confirma o horário pelo WhatsApp.`;
     }
-
-    if (answers.prazo === 'O quanto antes') {
-      passos.push('Como você quer começar já, garantimos sua vaga na turma que abre nesta semana.');
-    } else if (answers.prazo === 'Nos próximos 30 dias') {
-      passos.push('Reservamos sua condição da oferta atual por 30 dias, mesmo que você comece depois.');
-    } else {
-      passos.push('Sem pressa e sem cobrança: você recebe o conteúdo e decide no seu tempo.');
+    if (answers.conversa === 'Sim, quero agendar') {
+      return 'A equipe da Novera Academy entra em contato pelo WhatsApp para combinar o melhor horário.';
     }
-
-    passos.push('Na conversa, montamos junto o cronograma real que cabe na sua rotina.');
-    return passos;
+    return 'A equipe da Novera Academy vai entrar em contato pelo WhatsApp.';
   }
 
   /* Mensagem que o lead leva ao WhatsApp do comercial.
@@ -731,27 +716,20 @@
   }
 
   /* =========================================================
-     10. TELA FINAL
+     10. TELA DE AVISO
      ========================================================= */
   function finish() {
     const primeiroNome = (answers.nome || '').split(' ')[0];
 
     $('#doneTitle').textContent = primeiroNome
-      ? `${primeiroNome}, seu diagnóstico está pronto!`
-      : 'Seu diagnóstico está pronto!';
+      ? `${primeiroNome}, diagnóstico realizado!`
+      : 'Diagnóstico realizado!';
 
-    $('#doneMsg').textContent = 'Obrigado por responder. Nosso time já recebeu as suas respostas — veja os próximos passos abaixo.';
+    $('#doneMsg').textContent     = 'Recebemos as suas respostas.';
+    $('#doneContato').textContent = avisoDeContato();
 
-    const lista = $('#nextSteps');
-    lista.innerHTML = '';
-    proximosPassos().forEach((texto) => {
-      const li = document.createElement('li');
-      li.innerHTML = texto;   // conteúdo é gerado internamente, não vem do usuário
-      lista.appendChild(li);
-    });
-
-    // Mesma mensagem completa do envio do formulário, para o vendedor receber
-    // o mesmo histórico venha o lead por qual caminho vier.
+    // Mesma mensagem do envio automático. Serve de resgate: se o navegador
+    // bloqueou o pop-up, este botão é o caminho que resta até o WhatsApp.
     $('#waBtn').href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
     concluiu = true;
