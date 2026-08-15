@@ -574,16 +574,26 @@
     save();
     send();
 
-    // O diagnóstico já vai para o WhatsApp do comercial aqui. A tela seguinte
-    // é só o aviso de que deu certo — não repete o conteúdo do diagnóstico,
-    // que a pessoa lê na própria conversa.
-    window.open(
-      `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`,
-      '_blank',
-      'noopener'
-    );
+    // O diagnóstico vai para o WhatsApp do comercial aqui. A tela seguinte é
+    // só o aviso de que deu certo — não repete o conteúdo da conversa.
+    const wa = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
-    finish();
+    // Sem 'noopener' na string de features DE PROPÓSITO: com ela, window.open
+    // devolve null mesmo quando abre — é o que diz a especificação. Aí não dá
+    // para distinguir "abriu" de "foi bloqueado", e o resgate abaixo dispararia
+    // sempre. A proteção do opener é feita na mão, logo em seguida.
+    const aba = window.open(wa, '_blank');
+
+    if (aba) {
+      try { aba.opener = null; } catch (_) { /* cross-origin: segue o jogo */ }
+      finish();
+      return;
+    }
+
+    // Pop-up bloqueado. Como a tela de aviso não tem mais botão de WhatsApp,
+    // sem este resgate a pessoa ficaria sem caminho até a conversa. O lead já
+    // foi gravado, e o send() usa keepalive — a requisição sobrevive à saída.
+    window.location.href = wa;
   });
 
   /* =========================================================
@@ -739,10 +749,6 @@
 
     $('#doneMsg').textContent     = 'Recebemos as suas respostas.';
     $('#doneContato').textContent = avisoDeContato();
-
-    // Mesma mensagem do envio automático. Serve de resgate: se o navegador
-    // bloqueou o pop-up, este botão é o caminho que resta até o WhatsApp.
-    $('#waBtn').href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
     concluiu = true;
     goTo('done', 'forward');
