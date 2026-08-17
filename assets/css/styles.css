@@ -628,7 +628,8 @@ a{color:inherit;text-decoration:none}
   flex:none;width:46px;height:46px;border-radius:50%;
   box-shadow:0 0 0 2px var(--line-strong);
 }
-.quotes__foto{object-fit:cover;object-position:center top;background:var(--photo-fallback)}
+/* o arquivo já vem recortado em quadrado no rosto, então centro basta */
+.quotes__foto{object-fit:cover;object-position:center;background:var(--photo-fallback)}
 .quotes__mono{
   display:grid;place-items:center;
   background:var(--grad-brand);color:#fff;
