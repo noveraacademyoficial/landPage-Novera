@@ -20,8 +20,8 @@
     //
     // Para trocar, rode no console do navegador:  btoa('55DDDNUMERO')
     whatsappB64: 'NTU0ODk5ODM3NDIzMQ==',
-    // Mensagem pré-preenchida do botão "Ver minha oferta"
-    ofertaMsg: 'Quero garantir minha oferta especial.',
+    // Mensagem pré-preenchida do botão "Falar com a Novera"
+    ofertaMsg: 'Quero falar sobre o meu plano na Novera.',
     // Supabase — destino dos leads.
     //
     // Estes valores estão AQUI, e não no .env, porque a página é estática: sem
@@ -282,7 +282,7 @@
   function openQuiz() {
     lastFocused = document.activeElement;
 
-    // Quem já concluiu e clica em "Obter oferta" de novo quer refazer o
+    // Quem já concluiu e clica no CTA de novo quer refazer o
     // diagnóstico. Uso a flag, e não `current === 'done'`: quem concluiu e
     // clicou em "Voltar" antes de fechar tem current = 6, e reabria no
     // formulário de contato preenchido em vez de recomeçar.
