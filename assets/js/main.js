@@ -571,28 +571,34 @@
     answers.email    = email.value.trim();
     answers.telefone = fone.value.trim();
 
-    save();
-    send();
-
-    // O diagnóstico vai para o WhatsApp do comercial aqui. A tela seguinte é
-    // só o aviso de que deu certo — não repete o conteúdo da conversa.
+    // O WhatsApp abre ANTES de gravar, e não depois. Duas razões:
+    // 1) só assim sabemos se o pop-up foi bloqueado a tempo de registrar isso
+    //    junto com o lead — anon só tem INSERT, não dá para corrigir depois;
+    // 2) quanto menos código roda antes do window.open, menor a chance de o
+    //    navegador deixar de tratá-lo como resposta ao clique.
     const wa = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagemWhatsApp())}`;
 
     // Sem 'noopener' na string de features DE PROPÓSITO: com ela, window.open
     // devolve null mesmo quando abre — é o que diz a especificação. Aí não dá
-    // para distinguir "abriu" de "foi bloqueado", e o resgate abaixo dispararia
-    // sempre. A proteção do opener é feita na mão, logo em seguida.
+    // para distinguir "abriu" de "foi bloqueado".
     const aba = window.open(wa, '_blank');
-
     if (aba) {
       try { aba.opener = null; } catch (_) { /* cross-origin: segue o jogo */ }
-      finish();
-      return;
     }
 
+    // false = o WhatsApp nem apareceu para a pessoa: perda certa, e é o que
+    // este campo serve para revelar. true não garante que ela enviou — depois
+    // que o app abre, o site perde toda visibilidade.
+    answers.whatsappAbriu = !!aba;
+
+    save();
+    send();
+
+    if (aba) { finish(); return; }
+
     // Pop-up bloqueado. Como a tela de aviso não tem mais botão de WhatsApp,
-    // sem este resgate a pessoa ficaria sem caminho até a conversa. O lead já
-    // foi gravado, e o send() usa keepalive — a requisição sobrevive à saída.
+    // sem este resgate a pessoa ficaria sem caminho até a conversa. O send()
+    // usa keepalive, então a gravação sobrevive à saída da página.
     window.location.href = wa;
   });
 
@@ -629,6 +635,7 @@
       conversa:    p.conversa    || null,
       agenda_data: p.data        || null,
       agenda_hora: p.hora        || null,
+      whatsapp_abriu: typeof p.whatsappAbriu === 'boolean' ? p.whatsappAbriu : null,
       enviado_em:  p.enviadoEm,
       origem:      p.origem,
       referrer:    p.referrer
