@@ -42,7 +42,7 @@
      mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
      antiga guardada. O index.html é sempre revalidado, então o carimbo novo
      chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=13">
+<link rel="stylesheet" href="assets/css/styles.css?v=14">
 
 <script type="application/ld+json">
 {
@@ -525,21 +525,26 @@
 
       <!-- STEP 2 -->
       <section class="step" data-step="2" data-key="nivel" hidden>
-        <h3 class="step__q">Como você avalia seu inglês hoje?</h3>
-        <div class="opts" role="radiogroup" aria-label="Nível atual de inglês">
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Iniciante">
-            <span class="opt__ico" aria-hidden="true">🟢</span>
-            <span class="opt__txt"><b>Iniciante</b><em>Sei pouco ou estou recomeçando</em></span>
+        <h3 class="step__q">Qual situação mais parece com você hoje?</h3>
+        <div class="opts" role="radiogroup" aria-label="Situação atual com o inglês">
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Consigo falar apenas frases básicas">
+            <span class="opt__ico" aria-hidden="true">🌱</span>
+            <span class="opt__txt"><b>Consigo falar apenas frases básicas</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Intermediário">
-            <span class="opt__ico" aria-hidden="true">🟡</span>
-            <span class="opt__txt"><b>Intermediário</b><em>Entendo bastante, mas travo pra falar</em></span>
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Entendo inglês, mas travo para falar">
+            <span class="opt__ico" aria-hidden="true">💬</span>
+            <span class="opt__txt"><b>Entendo inglês, mas travo para falar</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Avançado">
-            <span class="opt__ico" aria-hidden="true">🔵</span>
-            <span class="opt__txt"><b>Avançado</b><em>Me viro bem e quero refinar</em></span>
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Consigo acompanhar conversas, mas tenho dificuldade em responder">
+            <span class="opt__ico" aria-hidden="true">🎧</span>
+            <span class="opt__txt"><b>Consigo acompanhar conversas, mas tenho dificuldade em responder</b></span>
+            <span class="opt__check" aria-hidden="true"></span>
+          </button>
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Já consigo conversar e quero ganhar mais confiança">
+            <span class="opt__ico" aria-hidden="true">🗣️</span>
+            <span class="opt__txt"><b>Já consigo conversar e quero ganhar mais confiança</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
         </div>
@@ -547,21 +552,31 @@
 
       <!-- STEP 3 -->
       <section class="step" data-step="3" data-key="dificuldade" hidden>
-        <h3 class="step__q">Qual é sua maior dificuldade com o inglês?</h3>
-        <div class="opts" role="radiogroup" aria-label="Maior dificuldade">
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Falar e conversar">
-            <span class="opt__ico" aria-hidden="true">💬</span>
-            <span class="opt__txt"><b>Falar e conversar</b><em>Sei a resposta, mas não sai</em></span>
+        <h3 class="step__q">O que mais te impede de evoluir hoje?</h3>
+        <div class="opts" role="radiogroup" aria-label="O que mais impede de evoluir">
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Tenho vergonha/travo para falar">
+            <span class="opt__ico" aria-hidden="true">🗣️</span>
+            <span class="opt__txt"><b>Tenho vergonha/travo para falar</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Entender / compreender">
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Tenho dificuldade para entender quando falam rápido">
             <span class="opt__ico" aria-hidden="true">👂</span>
-            <span class="opt__txt"><b>Entender / compreender</b><em>Falam rápido e eu me perco</em></span>
+            <span class="opt__txt"><b>Tenho dificuldade para entender quando falam rápido</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
-          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Gramática e vocabulário">
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Estudo, mas não consigo colocar em prática">
             <span class="opt__ico" aria-hidden="true">📚</span>
-            <span class="opt__txt"><b>Gramática e vocabulário</b><em>Faltam palavras e estrutura</em></span>
+            <span class="opt__txt"><b>Estudo, mas não consigo colocar em prática</b></span>
+            <span class="opt__check" aria-hidden="true"></span>
+          </button>
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Não consigo manter uma rotina">
+            <span class="opt__ico" aria-hidden="true">⏰</span>
+            <span class="opt__txt"><b>Não consigo manter uma rotina</b></span>
+            <span class="opt__check" aria-hidden="true"></span>
+          </button>
+          <button class="opt" type="button" role="radio" aria-checked="false" data-value="Já fiz cursos, mas nunca consegui evoluir">
+            <span class="opt__ico" aria-hidden="true">🔄</span>
+            <span class="opt__txt"><b>Já fiz cursos, mas nunca consegui evoluir</b></span>
             <span class="opt__check" aria-hidden="true"></span>
           </button>
         </div>
@@ -591,7 +606,7 @@
 
       <!-- STEP 5 -->
       <section class="step" data-step="5" data-key="conversa" hidden>
-        <h3 class="step__q">Podemos fazer uma conversa rápida para entender seu objetivo e apresentar o plano ideal para você?</h3>
+        <h3 class="step__q">Agora vamos transformar suas respostas em um plano.<br><span class="step__q-sub">Em uma conversa rápida, vamos entender seu objetivo, seu momento atual e mostrar qual formato de estudo faz mais sentido para você.</span></h3>
         <div class="opts" role="radiogroup" aria-label="Agendamento de conversa">
           <button class="opt" type="button" role="radio" aria-checked="false" data-value="Sim, quero agendar">
             <span class="opt__ico" aria-hidden="true">✅</span>
@@ -697,6 +712,6 @@
 </div>
 
 <!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
-<script src="assets/js/main.js?v=13" defer></script>
+<script src="assets/js/main.js?v=14" defer></script>
 </body>
 </html>
