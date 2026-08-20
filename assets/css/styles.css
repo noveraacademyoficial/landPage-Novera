@@ -456,7 +456,21 @@ a{color:inherit;text-decoration:none}
 .plano--destaque .plano__nome{color:var(--magenta-400)}
 .plano__resumo{color:var(--text-soft);font-size:.92rem;margin-bottom:1.4rem}
 
-/* Sem preço na página: o valor é passado na conversa */
+/* Preço de entrada. Fica logo abaixo do resumo, com peso alto:
+   com preço escondido a pessoa presume caro e sai antes de clicar. */
+.plano__preco{
+  display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;
+  margin-bottom:1.2rem;padding-bottom:1.2rem;
+  border-bottom:1px solid var(--line);
+}
+.plano__preco span{font-size:.84rem;color:var(--text-soft)}
+.plano__preco b{
+  font-family:var(--font-display);font-size:2rem;font-weight:800;
+  letter-spacing:-.03em;line-height:1;
+}
+.plano--destaque .plano__preco b{color:var(--magenta-400)}
+
+/* Nota de condição: complementa o preço, em tom menor */
 .plano__contato{
   padding:.9rem 1rem;border-radius:var(--r-md);margin-bottom:1.7rem;
   background:var(--tint);border:1px dashed var(--line-strong);
