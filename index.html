@@ -42,7 +42,7 @@
      mudar o número força a baixar a versão nova mesmo que ele ainda tenha a
      antiga guardada. O index.html é sempre revalidado, então o carimbo novo
      chega na hora. INCREMENTE a cada alteração em CSS ou JS. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=16">
+<link rel="stylesheet" href="assets/css/styles.css?v=17">
 
 <script type="application/ld+json">
 {
@@ -257,10 +257,13 @@
         </cite>
       </blockquote>
       <blockquote data-reveal>
-        <p>Viajei pra Europa sem aquele frio na barriga de ter que falar. Foi a primeira vez que a viagem foi só viagem.</p>
+        <p>Excelentes professores! A explicação é muito didática, direta e sem enrolação. O inglês é trabalhado de forma prática, com situações do dia a dia, e não fica aquela coisa cansativa de escola tradicional.</p>
         <cite>
-          <span class="quotes__mono" aria-hidden="true">D</span>
-          <span class="quotes__quem"><b>Diego F.</b><span>Designer</span></span>
+          <!-- Mesmo fallback da outra foto: se o arquivo faltar, vira a inicial -->
+          <img class="quotes__foto" src="assets/img/aluno-marcos.jpg" alt=""
+               width="46" height="46" loading="lazy" decoding="async"
+               onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'quotes__mono',textContent:'M','ariaHidden':'true'}))">
+          <span class="quotes__quem"><b>Marcos</b><span>Aluno Novera Academy</span></span>
         </cite>
       </blockquote>
       <blockquote data-reveal>
@@ -590,6 +593,6 @@
 </div>
 
 <!-- Ver a nota sobre ?v= no <head>: incremente junto com o do CSS -->
-<script src="assets/js/main.js?v=16" defer></script>
+<script src="assets/js/main.js?v=17" defer></script>
 </body>
 </html>
